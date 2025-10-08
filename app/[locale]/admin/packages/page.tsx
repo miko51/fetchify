@@ -37,7 +37,7 @@ export default function PackagesAdminPage() {
   }, []);
 
   const loadPackages = async () => {
-    const res = await fetch("/api/admin/packages");
+    const res = await fetch("/api/admin/packages", { cache: 'no-store' });
     const data = await res.json();
     setPackages(data.packages);
     setLoading(false);

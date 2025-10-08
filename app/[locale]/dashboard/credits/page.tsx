@@ -30,8 +30,8 @@ export default function CreditsPage() {
   const fetchData = async () => {
     try {
       const [userRes, packagesRes] = await Promise.all([
-        fetch("/api/user/me"),
-        fetch("/api/packages"),
+        fetch("/api/user/me", { cache: 'no-store' }),
+        fetch("/api/packages", { cache: 'no-store' }),
       ]);
 
       const userData = await userRes.json();

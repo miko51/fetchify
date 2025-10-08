@@ -3,6 +3,10 @@ import { getAdminUser } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
+// Désactiver le cache pour cette route
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // Schéma de validation pour créer/modifier un pack
 const packageSchema = z.object({
   name: z.string().min(1, "Le nom est requis"),
