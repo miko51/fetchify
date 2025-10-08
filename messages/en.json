@@ -1,0 +1,128 @@
+{
+  "nav": {
+    "home": "Home",
+    "pricing": "Pricing",
+    "documentation": "Documentation",
+    "faq": "FAQ",
+    "dashboard": "Dashboard",
+    "admin": "Admin",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out"
+  },
+  "hero": {
+    "badge": "Product Data API",
+    "title": "Extract Product Data from Any E-commerce Store",
+    "subtitle": "Get accurate product information in real-time via API. No maintenance required.",
+    "cta": "Start Free Trial",
+    "ctaSecondary": "View Documentation"
+  },
+  "features": {
+    "title": "Why Choose Our API?",
+    "subtitle": "A complete solution for your product data needs",
+    "feature1": {
+      "title": "Fast & Reliable",
+      "description": "Get accurate product data in seconds with 99.9% uptime guarantee"
+    },
+    "feature2": {
+      "title": "Global Coverage",
+      "description": "Support for thousands of e-commerce sites worldwide"
+    },
+    "feature3": {
+      "title": "Simple Integration",
+      "description": "Start in minutes with our developer-friendly REST API"
+    },
+    "feature4": {
+      "title": "Real-time Data",
+      "description": "Always up-to-date information: prices, stock, and descriptions"
+    }
+  },
+  "pricing": {
+    "title": "Simple, Transparent Pricing",
+    "subtitle": "Pay only for what you use. No hidden fees.",
+    "credits": "credits",
+    "perMonth": "/month",
+    "popular": "Most Popular",
+    "selectPlan": "Get Started",
+    "features": {
+      "api": "Full API Access",
+      "support": "24/7 Support",
+      "updates": "Real-time Updates",
+      "documentation": "Complete Documentation"
+    }
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "q1": "What is the Product Data API?",
+    "a1": "Our API allows you to extract detailed product information from any e-commerce store. You get prices, descriptions, images, stock status, and much more in real-time.",
+    "q2": "How does the credit system work?",
+    "a2": "Each API call consumes 1 credit. You can purchase credits in packages that never expire. The more credits you buy, the better the price per credit.",
+    "q3": "Which e-commerce platforms are supported?",
+    "a3": "Our API supports thousands of e-commerce sites worldwide, including Shopify, Amazon, eBay, Magento, PrestaShop, and many others.",
+    "q4": "Is there a free trial?",
+    "a4": "Yes! Create your account and get free credits to test our API. No credit card required.",
+    "q5": "How fast is the API?",
+    "a5": "Our API typically responds in 2-5 seconds depending on the target site. We guarantee 99.9% uptime.",
+    "q6": "Can I cancel my subscription anytime?",
+    "a6": "Yes, you can cancel your subscription at any time. Your remaining credits stay available until used."
+  },
+  "cta": {
+    "title": "Ready to Get Started?",
+    "subtitle": "Join thousands of developers using our API",
+    "button": "Start Now"
+  },
+  "footer": {
+    "product": "Product",
+    "pricing": "Pricing",
+    "documentation": "Documentation",
+    "api": "API Reference",
+    "company": "Company",
+    "about": "About",
+    "contact": "Contact",
+    "legal": "Legal",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "rights": "All rights reserved."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome",
+    "activityOverview": "Here's an overview of your activity",
+    "credits": "Available Credits",
+    "apiKeys": "API Keys",
+    "apiCalls": "API Calls",
+    "creditsUsed": "Credits Used",
+    "buyCredits": "Buy Credits",
+    "manageKeys": "Manage Keys",
+    "totalCallsToDate": "Total calls to date",
+    "totalCreditsConsumed": "Total credits consumed",
+    "usageOverTime": "Usage Over Time",
+    "viewUsage": "View your API usage",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "last7Days": "7 days",
+    "last30Days": "30 days",
+    "last90Days": "90 days",
+    "totalCredits": "Total Credits",
+    "totalCalls": "Total Calls",
+    "success": "Success",
+    "failures": "Failures",
+    "successRate": "Success Rate",
+    "recentActivity": "Recent Activity",
+    "endpoint": "Endpoint",
+    "status": "Status",
+    "date": "Date",
+    "failed": "Failed",
+    "viewAll": "View All",
+    "navigation": {
+      "dashboard": "Dashboard",
+      "apiKeys": "API Keys",
+      "credits": "Credits",
+      "billing": "Billing",
+      "playground": "Playground",
+      "admin": "Admin",
+      "logout": "Logout"
+    }
+  }
+}
+

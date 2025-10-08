@@ -1,0 +1,128 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "pricing": "Tarifs",
+    "documentation": "Documentation",
+    "faq": "FAQ",
+    "dashboard": "Tableau de bord",
+    "admin": "Admin",
+    "signIn": "Connexion",
+    "signUp": "Inscription",
+    "signOut": "Déconnexion"
+  },
+  "hero": {
+    "badge": "API de Données Produits",
+    "title": "Extraire les Données Produits de N'importe Quelle Boutique E-commerce",
+    "subtitle": "Obtenez des informations produits précises en temps réel via API. Aucune maintenance requise.",
+    "cta": "Commencer l'Essai Gratuit",
+    "ctaSecondary": "Voir la Documentation"
+  },
+  "features": {
+    "title": "Pourquoi Choisir Notre API ?",
+    "subtitle": "Une solution complète pour vos besoins en données produits",
+    "feature1": {
+      "title": "Rapide & Fiable",
+      "description": "Obtenez des données produits précises en quelques secondes avec une garantie de disponibilité de 99,9%"
+    },
+    "feature2": {
+      "title": "Couverture Mondiale",
+      "description": "Support de milliers de sites e-commerce dans le monde entier"
+    },
+    "feature3": {
+      "title": "Intégration Simple",
+      "description": "Démarrez en quelques minutes avec notre API REST conviviale pour les développeurs"
+    },
+    "feature4": {
+      "title": "Données en Temps Réel",
+      "description": "Informations toujours à jour : prix, stock et descriptions"
+    }
+  },
+  "pricing": {
+    "title": "Tarification Simple et Transparente",
+    "subtitle": "Payez uniquement ce que vous utilisez. Pas de frais cachés.",
+    "credits": "crédits",
+    "perMonth": "/mois",
+    "popular": "Le Plus Populaire",
+    "selectPlan": "Commencer",
+    "features": {
+      "api": "Accès API Complet",
+      "support": "Support 24/7",
+      "updates": "Mises à Jour en Temps Réel",
+      "documentation": "Documentation Complète"
+    }
+  },
+  "faq": {
+    "title": "Questions Fréquentes",
+    "q1": "Qu'est-ce que l'API de Données Produits ?",
+    "a1": "Notre API vous permet d'extraire des informations détaillées sur les produits de n'importe quelle boutique e-commerce. Vous obtenez les prix, descriptions, images, état du stock et bien plus en temps réel.",
+    "q2": "Comment fonctionne le système de crédits ?",
+    "a2": "Chaque appel API consomme 1 crédit. Vous pouvez acheter des crédits en packs qui n'expirent jamais. Plus vous achetez de crédits, meilleur est le prix par crédit.",
+    "q3": "Quelles plateformes e-commerce sont supportées ?",
+    "a3": "Notre API supporte des milliers de sites e-commerce dans le monde, y compris Shopify, Amazon, eBay, Magento, PrestaShop et bien d'autres.",
+    "q4": "Y a-t-il un essai gratuit ?",
+    "a4": "Oui ! Créez votre compte et obtenez des crédits gratuits pour tester notre API. Aucune carte bancaire requise.",
+    "q5": "Quelle est la vitesse de l'API ?",
+    "a5": "Notre API répond généralement en 2-5 secondes selon le site cible. Nous garantissons 99,9% de disponibilité.",
+    "q6": "Puis-je annuler mon abonnement à tout moment ?",
+    "a6": "Oui, vous pouvez annuler votre abonnement à tout moment. Vos crédits restants restent disponibles jusqu'à leur utilisation."
+  },
+  "cta": {
+    "title": "Prêt à Commencer ?",
+    "subtitle": "Rejoignez des milliers de développeurs utilisant notre API",
+    "button": "Commencer Maintenant"
+  },
+  "footer": {
+    "product": "Produit",
+    "pricing": "Tarifs",
+    "documentation": "Documentation",
+    "api": "Référence API",
+    "company": "Entreprise",
+    "about": "À propos",
+    "contact": "Contact",
+    "legal": "Légal",
+    "terms": "Conditions",
+    "privacy": "Confidentialité",
+    "rights": "Tous droits réservés."
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "welcome": "Bienvenue",
+    "activityOverview": "Voici un aperçu de votre activité",
+    "credits": "Crédits disponibles",
+    "apiKeys": "Clés API",
+    "apiCalls": "Appels API",
+    "creditsUsed": "Crédits utilisés",
+    "buyCredits": "Acheter des crédits",
+    "manageKeys": "Gérer les clés",
+    "totalCallsToDate": "Appels effectués au total",
+    "totalCreditsConsumed": "Crédits consommés au total",
+    "usageOverTime": "Consommation dans le temps",
+    "viewUsage": "Visualisez votre utilisation de l'API",
+    "startDate": "Date de début",
+    "endDate": "Date de fin",
+    "last7Days": "7 jours",
+    "last30Days": "30 jours",
+    "last90Days": "90 jours",
+    "totalCredits": "Total Crédits",
+    "totalCalls": "Total Appels",
+    "success": "Succès",
+    "failures": "Échecs",
+    "successRate": "Taux de Réussite",
+    "recentActivity": "Activité Récente",
+    "endpoint": "Point de terminaison",
+    "status": "Statut",
+    "date": "Date",
+    "failed": "Échec",
+    "viewAll": "Voir Tout",
+    "navigation": {
+      "dashboard": "Dashboard",
+      "apiKeys": "Clés API",
+      "credits": "Crédits",
+      "billing": "Facturation",
+      "playground": "Playground",
+      "admin": "Admin",
+      "logout": "Déconnexion"
+    }
+  }
+}
+

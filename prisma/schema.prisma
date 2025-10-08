@@ -1,0 +1,98 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  password      String
+  credits       Int       @default(0)
+  isAdmin       Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  apiKeys       ApiKey[]
+  apiUsage      ApiUsage[]
+  purchases     Purchase[]
+  
+  @@map("users")
+}
+
+model ApiKey {
+  id          String    @id @default(cuid())
+  key         String    @unique
+  name        String
+  isActive    Boolean   @default(true)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  lastUsedAt  DateTime?
+  
+  apiUsage    ApiUsage[]
+  
+  @@map("api_keys")
+  @@index([userId])
+  @@index([key])
+}
+
+model ApiUsage {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  apiKeyId    String
+  apiKey      ApiKey    @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
+  endpoint    String
+  requestUrl  String
+  response    Json?
+  success     Boolean
+  errorMessage String?
+  creditsUsed Int       @default(1)
+  createdAt   DateTime  @default(now())
+  
+  @@map("api_usage")
+  @@index([userId])
+  @@index([apiKeyId])
+  @@index([createdAt])
+}
+
+model Purchase {
+  id                String    @id @default(cuid())
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stripePaymentId   String    @unique
+  stripeInvoiceId   String?
+  amount            Int       // Montant en centimes
+  credits           Int       // Nombre de crédits achetés
+  status            String    // succeeded, pending, failed
+  createdAt         DateTime  @default(now())
+  
+  @@map("purchases")
+  @@index([userId])
+  @@index([stripePaymentId])
+}
+
+model CreditPackage {
+  id          String    @id @default(cuid())
+  name        String
+  description String    @default("")
+  credits     Int
+  price       Int       // Prix en centimes
+  stripePriceId String? @unique
+  features    String    @default("[]")  // JSON string avec les features du pack
+  isPopular   Boolean   @default(false)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
+  
+  @@map("credit_packages")
+}
+

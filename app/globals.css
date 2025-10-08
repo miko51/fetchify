@@ -1,0 +1,116 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 215 27.9% 16.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 262.1 83.3% 57.8%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 text-foreground min-h-screen;
+  }
+}
+
+@layer components {
+  /* Gradients Oxylabs */
+  .gradient-blue-violet {
+    @apply bg-gradient-to-r from-blue-600 to-violet-600;
+  }
+  
+  .gradient-blue-violet-hover {
+    @apply hover:from-blue-700 hover:to-violet-700;
+  }
+
+  /* Cards modernes */
+  .card-modern {
+    @apply bg-slate-900/50 border border-slate-800 rounded-2xl p-6 backdrop-blur-sm;
+  }
+
+  .card-modern-hover {
+    @apply hover:border-slate-700 transition-all duration-300;
+  }
+
+  /* Buttons modernes */
+  .btn-primary {
+    @apply px-6 py-3 gradient-blue-violet text-white rounded-xl font-medium gradient-blue-violet-hover transition-all duration-300 shadow-lg shadow-blue-500/20;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 bg-slate-800/50 text-white rounded-xl font-medium hover:bg-slate-700/50 transition-all duration-300;
+  }
+
+  /* Stats cards */
+  .stat-card-blue {
+    @apply bg-gradient-to-br from-blue-500/10 to-blue-600/10 border border-blue-500/20 rounded-2xl p-6 backdrop-blur-sm;
+  }
+
+  .stat-card-violet {
+    @apply bg-gradient-to-br from-violet-500/10 to-violet-600/10 border border-violet-500/20 rounded-2xl p-6 backdrop-blur-sm;
+  }
+
+  .stat-card-emerald {
+    @apply bg-gradient-to-br from-emerald-500/10 to-emerald-600/10 border border-emerald-500/20 rounded-2xl p-6 backdrop-blur-sm;
+  }
+
+  .stat-card-orange {
+    @apply bg-gradient-to-br from-orange-500/10 to-orange-600/10 border border-orange-500/20 rounded-2xl p-6 backdrop-blur-sm;
+  }
+
+  /* Input moderne */
+  .input-modern {
+    @apply w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all;
+  }
+
+  /* Glassmorphism */
+  .glass {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10;
+  }
+
+  .glass-dark {
+    @apply bg-slate-900/50 backdrop-blur-xl border border-slate-800;
+  }
+}
+
+/* Scrollbar personnalisée */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-700 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-600;
+}
+

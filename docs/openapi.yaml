@@ -1,0 +1,382 @@
+openapi: 3.0.3
+info:
+  title: Fetchify API
+  description: |
+    Fetchify API allows you to extract detailed product information from any e-commerce website.
+    
+    ## Authentication
+    
+    Use one of the following methods:
+    - Query parameter: `?apiKey=YOUR_KEY`
+    - Header: `X-API-Key: YOUR_KEY`
+    - Header: `Authorization: Bearer YOUR_KEY`
+    
+    ## Rate Limiting
+    
+    No hard rate limits. Usage is limited by your credit balance.
+    Each successful request consumes 1 credit.
+    
+    ## Support
+    
+    - Email: support@fetchify.app
+    - Documentation: https://docs.fetchify.app
+    
+  version: 1.0.0
+  contact:
+    name: Fetchify Support
+    email: support@fetchify.app
+    url: https://fetchify.app/support
+  license:
+    name: Proprietary
+    url: https://fetchify.app/terms
+
+servers:
+  - url: https://fetchify.app/api/v1
+    description: Production server
+  - url: https://staging.fetchify.app/api/v1
+    description: Staging server
+
+tags:
+  - name: Products
+    description: Product data extraction endpoints
+  - name: Credits
+    description: Credit management endpoints
+
+paths:
+  /product-crawl:
+    get:
+      tags:
+        - Products
+      summary: Extract product data
+      description: |
+        Extract detailed product information from any e-commerce product page.
+        
+        This endpoint supports thousands of e-commerce platforms including:
+        - Amazon
+        - eBay
+        - Shopify stores
+        - WooCommerce stores
+        - Magento stores
+        - And many more...
+        
+        **Cost:** 1 credit per request
+      operationId: getProductData
+      security:
+        - ApiKeyAuth: []
+        - ApiKeyQuery: []
+        - BearerAuth: []
+      parameters:
+        - name: url
+          in: query
+          required: true
+          description: The full URL of the product page to extract
+          schema:
+            type: string
+            format: uri
+            example: https://www.amazon.com/dp/B08N5WRWNW
+        - name: apiKey
+          in: query
+          required: false
+          description: Your API key (alternative to header authentication)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product data successfully extracted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+              example:
+                data:
+                  title: "Apple AirPods Pro"
+                  price: 249.00
+                  currency: "USD"
+                  description: "Active Noise Cancellation for immersive sound..."
+                  images:
+                    - "https://example.com/image1.jpg"
+                    - "https://example.com/image2.jpg"
+                  availability: "in_stock"
+                  brand: "Apple"
+                  sku: "B08N5WRWNW"
+                  rating: 4.7
+                  reviews_count: 89234
+                  specifications:
+                    color: "White"
+                    connectivity: "Bluetooth"
+                  categories:
+                    - "Electronics"
+                    - "Headphones"
+                  url: "https://www.amazon.com/dp/B08N5WRWNW"
+                  crawled_at: "2025-10-08T12:00:00Z"
+                credits:
+                  remaining: 499
+                  used: 1
+                meta:
+                  request_id: "req_abc123"
+                  processing_time_ms: 2341
+        '400':
+          description: Bad request - Missing or invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "URL du produit manquante. Utilisez '?url=YOUR_PRODUCT_URL'"
+                code: "MISSING_PARAMETER"
+        '401':
+          description: Unauthorized - Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "API key missing. Use '?apiKey=YOUR_KEY' in URL or 'X-API-Key' header"
+                code: "UNAUTHORIZED"
+        '402':
+          description: Payment Required - Insufficient credits
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientCreditsError'
+              example:
+                error: "Crédits insuffisants"
+                credits: 0
+                message: "Veuillez acheter des crédits pour continuer à utiliser l'API"
+                code: "INSUFFICIENT_CREDITS"
+        '403':
+          description: Forbidden - API key disabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Clé API désactivée"
+                code: "API_KEY_DISABLED"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalApiError'
+              example:
+                error: "Erreur de l'API externe"
+                credits:
+                  remaining: 498
+                  used: 1
+                code: "EXTERNAL_API_ERROR"
+
+  /credits/balance:
+    get:
+      tags:
+        - Credits
+      summary: Check credit balance
+      description: Get your current credit balance and account information
+      operationId: getCreditsBalance
+      security:
+        - ApiKeyAuth: []
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Credit balance retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditsBalanceResponse'
+              example:
+                userId: "user_abc123"
+                email: "user@example.com"
+                name: "John Doe"
+                credits: 1500
+                balance: 1500
+        '401':
+          description: Unauthorized - Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key in custom header
+    ApiKeyQuery:
+      type: apiKey
+      in: query
+      name: apiKey
+      description: API key in query parameter
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: API key in Authorization header
+
+  schemas:
+    ProductResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ProductData'
+        credits:
+          $ref: '#/components/schemas/CreditsInfo'
+        meta:
+          $ref: '#/components/schemas/MetaInfo'
+
+    ProductData:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Product title/name
+          example: "Apple AirPods Pro"
+        price:
+          type: number
+          format: float
+          description: Product price
+          example: 249.00
+        currency:
+          type: string
+          description: Currency code (ISO 4217)
+          example: "USD"
+        description:
+          type: string
+          description: Product description
+          example: "Active Noise Cancellation for immersive sound..."
+        images:
+          type: array
+          items:
+            type: string
+            format: uri
+          description: Array of product image URLs
+        availability:
+          type: string
+          description: Stock availability
+          enum: [in_stock, out_of_stock, preorder, discontinued]
+          example: "in_stock"
+        brand:
+          type: string
+          description: Product brand
+          example: "Apple"
+        sku:
+          type: string
+          description: Stock Keeping Unit
+          example: "B08N5WRWNW"
+        rating:
+          type: number
+          format: float
+          description: Average product rating
+          minimum: 0
+          maximum: 5
+          example: 4.7
+        reviews_count:
+          type: integer
+          description: Number of reviews
+          example: 89234
+        specifications:
+          type: object
+          additionalProperties: true
+          description: Product specifications/attributes
+        categories:
+          type: array
+          items:
+            type: string
+          description: Product categories
+        url:
+          type: string
+          format: uri
+          description: Original product URL
+        crawled_at:
+          type: string
+          format: date-time
+          description: Timestamp when data was extracted
+
+    CreditsInfo:
+      type: object
+      properties:
+        remaining:
+          type: integer
+          description: Credits remaining after this request
+          example: 499
+        used:
+          type: integer
+          description: Credits consumed by this request
+          example: 1
+
+    MetaInfo:
+      type: object
+      properties:
+        request_id:
+          type: string
+          description: Unique request identifier
+          example: "req_abc123"
+        processing_time_ms:
+          type: integer
+          description: Processing time in milliseconds
+          example: 2341
+
+    CreditsBalanceResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+          example: "user_abc123"
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        name:
+          type: string
+          example: "John Doe"
+        credits:
+          type: integer
+          description: Current credit balance
+          example: 1500
+        balance:
+          type: integer
+          description: Current credit balance (alias)
+          example: 1500
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+        code:
+          type: string
+          description: Error code
+          enum:
+            - UNAUTHORIZED
+            - MISSING_PARAMETER
+            - API_KEY_DISABLED
+            - INTERNAL_ERROR
+
+    InsufficientCreditsError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Crédits insuffisants"
+        credits:
+          type: integer
+          example: 0
+        message:
+          type: string
+          example: "Veuillez acheter des crédits pour continuer à utiliser l'API"
+        code:
+          type: string
+          example: "INSUFFICIENT_CREDITS"
+
+    ExternalApiError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Erreur de l'API externe"
+        credits:
+          $ref: '#/components/schemas/CreditsInfo'
+        code:
+          type: string
+          example: "EXTERNAL_API_ERROR"

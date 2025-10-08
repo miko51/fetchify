@@ -1,0 +1,224 @@
+{
+  "info": {
+    "name": "Fetchify API",
+    "_postman_id": "fetchify-api-collection",
+    "description": "Complete Fetchify API Collection for product data extraction",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "fetchify"
+  },
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "value",
+        "value": "{{api_key}}",
+        "type": "string"
+      },
+      {
+        "key": "key",
+        "value": "X-API-Key",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://fetchify.app/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "api_key",
+      "value": "YOUR_API_KEY_HERE",
+      "type": "string"
+    },
+    {
+      "key": "product_url",
+      "value": "https://www.amazon.com/dp/B08N5WRWNW",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Extract Product Data",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/product-crawl?url={{product_url}}",
+              "host": ["{{base_url}}"],
+              "path": ["product-crawl"],
+              "query": [
+                {
+                  "key": "url",
+                  "value": "{{product_url}}",
+                  "description": "The full URL of the product page to extract"
+                }
+              ]
+            },
+            "description": "Extract detailed product information from any e-commerce product page.\n\n**Cost:** 1 credit per request\n\n**Response includes:**\n- Title\n- Price\n- Currency\n- Description\n- Images\n- Availability\n- Brand\n- SKU\n- Rating\n- Reviews count\n- Specifications\n- Categories"
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "X-API-Key",
+                    "value": "{{api_key}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/product-crawl?url={{product_url}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["product-crawl"],
+                  "query": [
+                    {
+                      "key": "url",
+                      "value": "{{product_url}}"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"data\": {\n    \"title\": \"Apple AirPods Pro\",\n    \"price\": 249.00,\n    \"currency\": \"USD\",\n    \"description\": \"Active Noise Cancellation for immersive sound...\",\n    \"images\": [\n      \"https://example.com/image1.jpg\",\n      \"https://example.com/image2.jpg\"\n    ],\n    \"availability\": \"in_stock\",\n    \"brand\": \"Apple\",\n    \"sku\": \"B08N5WRWNW\",\n    \"rating\": 4.7,\n    \"reviews_count\": 89234,\n    \"specifications\": {\n      \"color\": \"White\",\n      \"connectivity\": \"Bluetooth\"\n    },\n    \"categories\": [\n      \"Electronics\",\n      \"Headphones\"\n    ],\n    \"url\": \"https://www.amazon.com/dp/B08N5WRWNW\",\n    \"crawled_at\": \"2025-10-08T12:00:00Z\"\n  },\n  \"credits\": {\n    \"remaining\": 499,\n    \"used\": 1\n  },\n  \"meta\": {\n    \"request_id\": \"req_abc123\",\n    \"processing_time_ms\": 2341\n  }\n}"
+            },
+            {
+              "name": "Insufficient Credits",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "X-API-Key",
+                    "value": "{{api_key}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/product-crawl?url={{product_url}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["product-crawl"],
+                  "query": [
+                    {
+                      "key": "url",
+                      "value": "{{product_url}}"
+                    }
+                  ]
+                }
+              },
+              "status": "Payment Required",
+              "code": 402,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"Crédits insuffisants\",\n  \"credits\": 0,\n  \"message\": \"Veuillez acheter des crédits pour continuer à utiliser l'API\",\n  \"code\": \"INSUFFICIENT_CREDITS\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Extract Product Data (URL Auth)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/product-crawl?url={{product_url}}&apiKey={{api_key}}",
+              "host": ["{{base_url}}"],
+              "path": ["product-crawl"],
+              "query": [
+                {
+                  "key": "url",
+                  "value": "{{product_url}}",
+                  "description": "The full URL of the product page to extract"
+                },
+                {
+                  "key": "apiKey",
+                  "value": "{{api_key}}",
+                  "description": "Your API key (alternative to header authentication)"
+                }
+              ]
+            },
+            "description": "Alternative authentication method using API key in the URL query parameter instead of header."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Credits",
+      "item": [
+        {
+          "name": "Check Credit Balance",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{api_key}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/../credits/balance",
+              "host": ["{{base_url}}"],
+              "path": ["..", "credits", "balance"]
+            },
+            "description": "Get your current credit balance and account information.\n\n**No cost** - this endpoint is free to call.\n\n**Response includes:**\n- User ID\n- Email\n- Name\n- Current credit balance"
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "X-API-Key",
+                    "value": "{{api_key}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/../credits/balance",
+                  "host": ["{{base_url}}"],
+                  "path": ["..", "credits", "balance"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"userId\": \"user_abc123\",\n  \"email\": \"user@example.com\",\n  \"name\": \"John Doe\",\n  \"credits\": 1500,\n  \"balance\": 1500\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
