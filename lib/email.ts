@@ -1,6 +1,17 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy initialization de Resend pour éviter les erreurs au build
+let resend: Resend | null = null;
+
+function getResendClient() {
+  if (!resend) {
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error('RESEND_API_KEY is not configured. Please add it to your environment variables.');
+    }
+    resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resend;
+}
 
 export interface SendEmailOptions {
   to: string;
@@ -10,7 +21,8 @@ export interface SendEmailOptions {
 
 export async function sendEmail({ to, subject, html }: SendEmailOptions) {
   try {
-    const data = await resend.emails.send({
+    const client = getResendClient();
+    const data = await client.emails.send({
       from: process.env.EMAIL_FROM || 'Fetchify <noreply@fetchify.app>',
       to,
       subject,
