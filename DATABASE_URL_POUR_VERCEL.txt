@@ -1,0 +1,40 @@
+# 🎯 URL À COPIER DANS VERCEL
+
+## ⚠️ IMPORTANT : Remplacez [PASSWORD] par votre mot de passe Supabase réel !
+
+postgresql://postgres.bklfpburxuluzkrtqyoa:[PASSWORD]@aws-1-eu-west-3.pooler.supabase.com:5432/postgres
+
+---
+
+## 📝 Étapes pour mettre à jour sur Vercel :
+
+1. Allez sur : https://vercel.com/miko51s-projects/fetchify/settings/environment-variables
+
+2. Trouvez la ligne `DATABASE_URL`
+
+3. Cliquez sur les 3 points `⋮` à droite
+
+4. Cliquez sur **Edit**
+
+5. Collez l'URL ci-dessus (après avoir remplacé [PASSWORD])
+
+6. Cliquez sur **Save**
+
+7. Allez dans **Deployments**
+
+8. Cliquez sur les 3 points du dernier déploiement
+
+9. Cliquez sur **Redeploy**
+
+---
+
+## 🔐 Si vous ne connaissez pas le mot de passe :
+
+1. Allez sur : https://supabase.com/dashboard/project/bklfpburxuluzkrtqyoa/settings/database
+
+2. Cliquez sur **Reset database password**
+
+3. Copiez le nouveau mot de passe
+
+4. Utilisez-le dans l'URL ci-dessus
+

@@ -1,0 +1,64 @@
+╔═══════════════════════════════════════════════════════════╗
+║  VARIABLES D'ENVIRONNEMENT À COPIER-COLLER SUR VERCEL    ║
+╚═══════════════════════════════════════════════════════════╝
+
+Allez sur Vercel → Settings → Environment Variables → Add New
+
+
+1️⃣ DATABASE_URL
+═══════════════════════════════════════════════════════════
+postgresql://postgres.bklfpburxuluzkrtqyoa:pjEpd5OClWhhngDL@aws-1-eu-west-3.pooler.supabase.com:6543/postgres
+
+
+2️⃣ NEXTAUTH_URL
+═══════════════════════════════════════════════════════════
+https://fetchify-nine.vercel.app
+
+⚠️ Changez par votre vrai domaine !
+
+
+3️⃣ NEXTAUTH_SECRET
+═══════════════════════════════════════════════════════════
+htuYCqpYiJyi1JIpBASWxajsai+yO9k5+7raCucIlpE=
+
+
+4️⃣ STRIPE_SECRET_KEY
+═══════════════════════════════════════════════════════════
+⚠️ À récupérer sur Stripe → Developers → API Keys
+sk_test_... ou sk_live_...
+
+
+5️⃣ STRIPE_PUBLISHABLE_KEY
+═══════════════════════════════════════════════════════════
+⚠️ À récupérer sur Stripe → Developers → API Keys
+pk_test_... ou pk_live_...
+
+
+6️⃣ STRIPE_WEBHOOK_SECRET
+═══════════════════════════════════════════════════════════
+whsec_temp
+
+⚠️ Pour l'instant, mettez "whsec_temp"
+   Nous configurerons le vrai webhook après
+
+
+7️⃣ EXTERNAL_API_URL
+═══════════════════════════════════════════════════════════
+https://n8n.wharfer.io/webhook/3a53069f-ca20-4c01-afc9-5e98639b5da9
+
+
+8️⃣ NODE_ENV
+═══════════════════════════════════════════════════════════
+production
+
+⚠️ Seulement pour "Production" (décochez Preview et Development)
+
+
+═══════════════════════════════════════════════════════════
+
+✅ Après avoir ajouté TOUTES les variables :
+   1. Allez dans Deployments
+   2. Cliquez sur ... → Redeploy
+   3. Attendez 1-2 minutes
+   4. Testez votre site !
+

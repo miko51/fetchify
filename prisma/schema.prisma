@@ -17,12 +17,16 @@ model User {
   password      String
   credits       Int       @default(0)
   isAdmin       Boolean   @default(false)
+  isVerified    Boolean   @default(false)
+  emailVerified DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   
-  apiKeys       ApiKey[]
-  apiUsage      ApiUsage[]
-  purchases     Purchase[]
+  apiKeys              ApiKey[]
+  apiUsage             ApiUsage[]
+  purchases            Purchase[]
+  verificationCodes    VerificationCode[]
+  passwordResetTokens  PasswordResetToken[]
   
   @@map("users")
 }
@@ -94,5 +98,32 @@ model CreditPackage {
   updatedAt   DateTime  @default(now()) @updatedAt
   
   @@map("credit_packages")
+}
+
+model VerificationCode {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  code      String    // Code à 6 chiffres
+  expiresAt DateTime  // Expiration après 15 minutes
+  createdAt DateTime  @default(now())
+  
+  @@map("verification_codes")
+  @@index([userId])
+  @@index([code])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String    @unique
+  expiresAt DateTime  // Expiration après 1 heure
+  used      Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  
+  @@map("password_reset_tokens")
+  @@index([userId])
+  @@index([token])
 }
 

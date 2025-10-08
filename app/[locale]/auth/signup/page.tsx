@@ -45,6 +45,7 @@ export default function SignUpPage() {
           name: formData.name,
           email: formData.email,
           password: formData.password,
+          language: locale,
         }),
       });
 
@@ -54,7 +55,14 @@ export default function SignUpPage() {
         throw new Error(data.error || "Erreur lors de l'inscription");
       }
 
-      router.push(`/${locale}/auth/signin?registered=true`);
+      // Rediriger vers la page de vérification avec les infos pour connexion auto
+      if (data.requiresVerification && data.userId) {
+        router.push(
+          `/${locale}/auth/verify-email?userId=${data.userId}&email=${encodeURIComponent(formData.email)}&password=${encodeURIComponent(formData.password)}`
+        );
+      } else {
+        router.push(`/${locale}/auth/signin?registered=true`);
+      }
     } catch (error: any) {
       setError(error.message);
     } finally {
