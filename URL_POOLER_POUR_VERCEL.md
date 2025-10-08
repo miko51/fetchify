@@ -56,6 +56,7 @@ Vous devriez voir quelque chose comme :
 postgresql://postgres.bklfpburxuluzkrtqyoa:pjEpd5OClWhhngDL@aws-0-eu-central-1.pooler.supabase.com:6543/postgres
 ```
 
+
 **Vérifiez que l'URL contient :**
 - ✅ `pooler.supabase.com` (pas juste `supabase.co`)
 - ✅ Port `6543` (pas `5432`)
