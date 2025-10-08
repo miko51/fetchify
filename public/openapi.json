@@ -1,0 +1,399 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Fetchify API",
+    "description": "API d'extraction de données produits e-commerce en temps réel",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Support Fetchify",
+      "url": "https://fetchify.app",
+      "email": "support@fetchify.app"
+    },
+    "license": {
+      "name": "Proprietary"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://fetchify.app",
+      "description": "Production"
+    },
+    {
+      "url": "http://localhost:3005",
+      "description": "Development"
+    }
+  ],
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ],
+  "paths": {
+    "/api/fetch": {
+      "get": {
+        "summary": "Extraire les données d'un produit",
+        "description": "Extrait automatiquement les informations d'un produit e-commerce à partir de son URL (titre, prix, images, description, etc.)",
+        "operationId": "fetchProduct",
+        "tags": ["Products"],
+        "parameters": [
+          {
+            "name": "url",
+            "in": "query",
+            "required": true,
+            "description": "URL complète du produit à extraire",
+            "schema": {
+              "type": "string",
+              "format": "uri",
+              "example": "https://example.com/product/12345"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Extraction réussie",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Paramètres invalides",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé - Clé API invalide",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "402": {
+            "description": "Crédits insuffisants",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de taux dépassée",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur serveur",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/credits/balance": {
+      "get": {
+        "summary": "Vérifier le solde de crédits",
+        "description": "Retourne le nombre de crédits disponibles pour l'utilisateur authentifié",
+        "operationId": "getCreditsBalance",
+        "tags": ["Credits"],
+        "responses": {
+          "200": {
+            "description": "Solde récupéré avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreditsBalance"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/usage/stats": {
+      "get": {
+        "summary": "Statistiques d'utilisation",
+        "description": "Retourne les statistiques d'utilisation de l'API sur une période donnée",
+        "operationId": "getUsageStats",
+        "tags": ["Usage"],
+        "parameters": [
+          {
+            "name": "start",
+            "in": "query",
+            "required": false,
+            "description": "Date de début (format: YYYY-MM-DD)",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2025-01-01"
+            }
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "required": false,
+            "description": "Date de fin (format: YYYY-MM-DD)",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2025-12-31"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Statistiques récupérées avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsageStats"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non autorisé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "Clé API obtenue depuis votre dashboard Fetchify"
+      }
+    },
+    "schemas": {
+      "ProductResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "Nom du produit",
+                "example": "iPhone 15 Pro Max"
+              },
+              "price": {
+                "type": "string",
+                "description": "Prix du produit",
+                "example": "1299.99"
+              },
+              "currency": {
+                "type": "string",
+                "description": "Devise du prix",
+                "example": "EUR"
+              },
+              "description": {
+                "type": "string",
+                "description": "Description du produit",
+                "example": "Le smartphone le plus avancé d'Apple..."
+              },
+              "images": {
+                "type": "array",
+                "description": "URLs des images du produit",
+                "items": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "example": [
+                  "https://example.com/image1.jpg",
+                  "https://example.com/image2.jpg"
+                ]
+              },
+              "availability": {
+                "type": "string",
+                "description": "Disponibilité du produit",
+                "enum": ["in_stock", "out_of_stock", "pre_order", "discontinued"],
+                "example": "in_stock"
+              },
+              "brand": {
+                "type": "string",
+                "description": "Marque du produit",
+                "example": "Apple"
+              },
+              "sku": {
+                "type": "string",
+                "description": "SKU / Référence produit",
+                "example": "IPHONE-15-PRO-MAX-256"
+              },
+              "rating": {
+                "type": "number",
+                "format": "float",
+                "description": "Note moyenne (sur 5)",
+                "minimum": 0,
+                "maximum": 5,
+                "example": 4.7
+              },
+              "reviews_count": {
+                "type": "integer",
+                "description": "Nombre d'avis",
+                "example": 1247
+              }
+            }
+          },
+          "credits_used": {
+            "type": "integer",
+            "description": "Nombre de crédits utilisés pour cette requête",
+            "example": 1
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date et heure de l'extraction",
+            "example": "2025-10-08T12:34:56Z"
+          }
+        }
+      },
+      "CreditsBalance": {
+        "type": "object",
+        "properties": {
+          "credits": {
+            "type": "integer",
+            "description": "Nombre de crédits disponibles",
+            "example": 1247
+          },
+          "user_id": {
+            "type": "string",
+            "description": "Identifiant de l'utilisateur",
+            "example": "user_abc123xyz"
+          }
+        }
+      },
+      "UsageStats": {
+        "type": "object",
+        "properties": {
+          "total_requests": {
+            "type": "integer",
+            "description": "Nombre total de requêtes",
+            "example": 5420
+          },
+          "total_credits_used": {
+            "type": "integer",
+            "description": "Crédits totaux utilisés",
+            "example": 5420
+          },
+          "period": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "string",
+                "format": "date",
+                "example": "2025-01-01"
+              },
+              "end": {
+                "type": "string",
+                "format": "date",
+                "example": "2025-10-08"
+              }
+            }
+          },
+          "daily_usage": {
+            "type": "array",
+            "description": "Usage quotidien",
+            "items": {
+              "type": "object",
+              "properties": {
+                "date": {
+                  "type": "string",
+                  "format": "date",
+                  "example": "2025-10-08"
+                },
+                "requests": {
+                  "type": "integer",
+                  "example": 127
+                },
+                "credits": {
+                  "type": "integer",
+                  "example": 127
+                }
+              }
+            }
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "error": {
+            "type": "string",
+            "description": "Message d'erreur",
+            "example": "Clé API invalide"
+          },
+          "code": {
+            "type": "string",
+            "description": "Code d'erreur",
+            "example": "INVALID_API_KEY"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Products",
+      "description": "Endpoints pour l'extraction de données produits"
+    },
+    {
+      "name": "Credits",
+      "description": "Gestion des crédits API"
+    },
+    {
+      "name": "Usage",
+      "description": "Statistiques d'utilisation"
+    }
+  ]
+}
+

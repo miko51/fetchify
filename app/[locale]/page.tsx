@@ -58,7 +58,7 @@ export default function LandingPage() {
               <Link href="#pricing" className="text-slate-300 hover:text-white transition-colors">
                 {t('nav.pricing')}
               </Link>
-              <Link href={`/${locale}/docs`} className="text-slate-300 hover:text-white transition-colors">
+              <Link href={`/${locale}/documentation`} className="text-slate-300 hover:text-white transition-colors">
                 Documentation
               </Link>
               <Link href={`/${locale}/status`} className="text-slate-300 hover:text-white transition-colors">
