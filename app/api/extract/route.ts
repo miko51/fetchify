@@ -65,7 +65,6 @@ async function authenticateRequest(req: NextRequest) {
           id: true,
           email: true,
           credits: true,
-          isActive: true,
         },
       },
     },
