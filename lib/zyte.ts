@@ -83,12 +83,7 @@ function buildZyteRequestBody(options: ZyteExtractionOptions): Record<string, an
     };
   }
 
-  // For SERP, request maxItems for top 10 results
-  if (type === 'serp') {
-    body.serpOptions = {
-      maxItems: 10,
-    };
-  }
+  // SERP doesn't need special options - it returns top results by default
 
   // Add geolocation if specified
   if (geolocation) {
