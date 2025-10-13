@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Play, Copy, AlertCircle, Code2, Zap, CheckCircle2 } from "lucide-react";
+import { Play, Copy, AlertCircle, Code2, Zap, CheckCircle2, Globe } from "lucide-react";
 
 interface ApiKey {
   id: string;
@@ -12,14 +12,66 @@ interface ApiKey {
   isActive: boolean;
 }
 
+type ExtractionType = 
+  | 'product'
+  | 'productList'
+  | 'productNavigation'
+  | 'article'
+  | 'articleList'
+  | 'articleNavigation'
+  | 'forumThread'
+  | 'jobPosting'
+  | 'jobPostingNavigation'
+  | 'pageContent'
+  | 'serp';
+
+type ExtractionSource = 'httpResponseBody' | 'browserHtmlOnly' | 'browserHtml';
+
+const EXTRACTION_TYPES: { value: ExtractionType; label: string; description: string }[] = [
+  { value: 'product', label: 'Product', description: 'Extract data from a product page' },
+  { value: 'productList', label: 'Product List', description: 'Extract products from a listing page' },
+  { value: 'productNavigation', label: 'Product Navigation', description: 'Extract category navigation' },
+  { value: 'article', label: 'Article', description: 'Extract data from an article/blog post' },
+  { value: 'articleList', label: 'Article List', description: 'Extract articles from a listing page' },
+  { value: 'articleNavigation', label: 'Article Navigation', description: 'Extract article navigation' },
+  { value: 'forumThread', label: 'Forum Thread', description: 'Extract data from a forum thread' },
+  { value: 'jobPosting', label: 'Job Posting', description: 'Extract data from a job posting' },
+  { value: 'jobPostingNavigation', label: 'Job List', description: 'Extract jobs from a listing page' },
+  { value: 'pageContent', label: 'Page Content', description: 'Extract generic page content' },
+  { value: 'serp', label: 'SERP', description: 'Extract Google search results' },
+];
+
+const EXTRACTION_SOURCES: { value: ExtractionSource; label: string; description: string }[] = [
+  { value: 'httpResponseBody', label: 'HTTP (Fast & Cheap)', description: 'Works for most sites' },
+  { value: 'browserHtmlOnly', label: 'Browser HTML', description: 'Better for JS-heavy sites' },
+  { value: 'browserHtml', label: 'Browser + Visual', description: 'Best quality (default)' },
+];
+
+const COUNTRY_CODES = [
+  { code: '', label: 'No specific country' },
+  { code: 'FR', label: '🇫🇷 France' },
+  { code: 'US', label: '🇺🇸 United States' },
+  { code: 'GB', label: '🇬🇧 United Kingdom' },
+  { code: 'DE', label: '🇩🇪 Germany' },
+  { code: 'ES', label: '🇪🇸 Spain' },
+  { code: 'IT', label: '🇮🇹 Italy' },
+  { code: 'CA', label: '🇨🇦 Canada' },
+  { code: 'AU', label: '🇦🇺 Australia' },
+];
+
 export default function PlaygroundPage() {
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
   const [selectedKeyId, setSelectedKeyId] = useState<string>("");
   const [url, setUrl] = useState("");
+  const [extractionType, setExtractionType] = useState<ExtractionType>('product');
+  const [extractionSource, setExtractionSource] = useState<ExtractionSource>('browserHtml');
+  const [countryCode, setCountryCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<any>(null);
   const [error, setError] = useState("");
   const [currentCredits, setCurrentCredits] = useState(0);
+  const [copiedCode, setCopiedCode] = useState(false);
+  const [copiedResponse, setCopiedResponse] = useState(false);
 
   useEffect(() => {
     fetchApiKeys();
@@ -69,14 +121,24 @@ export default function PlaygroundPage() {
     setResponse(null);
 
     try {
-      const apiResponse = await fetch(
-        `/api/v1/product-crawl?url=${encodeURIComponent(url)}`,
-        {
-          headers: {
-            "X-API-Key": selectedKey.key,
-          },
-        }
-      );
+      const requestBody: any = {
+        url,
+        type: extractionType,
+        source: extractionSource,
+      };
+
+      if (countryCode) {
+        requestBody.country = countryCode;
+      }
+
+      const apiResponse = await fetch('/api/extract', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${selectedKey.key}`,
+        },
+        body: JSON.stringify(requestBody),
+      });
 
       const data = await apiResponse.json();
 
@@ -97,97 +159,138 @@ export default function PlaygroundPage() {
   const copyResponse = () => {
     if (response) {
       navigator.clipboard.writeText(JSON.stringify(response, null, 2));
+      setCopiedResponse(true);
+      setTimeout(() => setCopiedResponse(false), 2000);
     }
   };
 
-  const copyCurlCommand = () => {
+  const generateCurlCommand = () => {
     const selectedKey = apiKeys.find((k) => k.id === selectedKeyId);
-    if (!selectedKey) return;
+    if (!selectedKey) return "";
 
-    const curlCommand = `curl -X GET "${window.location.origin}/api/v1/product-crawl?url=${encodeURIComponent(
-      url
-    )}" \\
-  -H "X-API-Key: ${selectedKey.key}"`;
+    const requestBody: any = {
+      url: url || "https://example.com",
+      type: extractionType,
+      source: extractionSource,
+    };
 
-    navigator.clipboard.writeText(curlCommand);
+    if (countryCode) {
+      requestBody.country = countryCode;
+    }
+
+    return `curl -X POST https://fetchify.app/api/extract \\
+  -H "Authorization: Bearer ${selectedKey.key}" \\
+  -H "Content-Type: application/json" \\
+  -d '${JSON.stringify(requestBody, null, 2)}'`;
+  };
+
+  const copyCurlCommand = () => {
+    navigator.clipboard.writeText(generateCurlCommand());
+    setCopiedCode(true);
+    setTimeout(() => setCopiedCode(false), 2000);
+  };
+
+  const generateJavaScriptCode = () => {
+    const selectedKey = apiKeys.find((k) => k.id === selectedKeyId);
+    if (!selectedKey) return "";
+
+    const requestBody: any = {
+      url: url || "https://example.com",
+      type: extractionType,
+      source: extractionSource,
+    };
+
+    if (countryCode) {
+      requestBody.country = countryCode;
+    }
+
+    return `const response = await fetch('https://fetchify.app/api/extract', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer ${selectedKey.key}',
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(${JSON.stringify(requestBody, null, 2)})
+});
+
+const data = await response.json();
+console.log(data);`;
+  };
+
+  const generatePythonCode = () => {
+    const selectedKey = apiKeys.find((k) => k.id === selectedKeyId);
+    if (!selectedKey) return "";
+
+    const requestBody: any = {
+      url: url || "https://example.com",
+      type: extractionType,
+      source: extractionSource,
+    };
+
+    if (countryCode) {
+      requestBody.country = countryCode;
+    }
+
+    return `import requests
+
+response = requests.post(
+    'https://fetchify.app/api/extract',
+    headers={
+        'Authorization': 'Bearer ${selectedKey.key}',
+        'Content-Type': 'application/json',
+    },
+    json=${JSON.stringify(requestBody, null, 2).replace(/"/g, "'")}
+)
+
+data = response.json()
+print(data)`;
   };
 
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 via-violet-600 to-blue-700 p-8 shadow-2xl">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 p-8 shadow-2xl">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
         <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-3 mb-2">
             <div className="p-3 bg-white/10 backdrop-blur-sm rounded-xl">
-              <Code2 className="w-8 h-8 text-white" />
+              <Zap className="w-8 h-8 text-white" />
             </div>
-            <div>
-              <h1 className="text-4xl font-bold text-white">Playground API</h1>
-              <p className="text-blue-100 mt-1">
-                Testez l'API Product Crawl en temps réel
-              </p>
-            </div>
+            <h1 className="text-4xl font-bold text-white">API Playground</h1>
           </div>
-          <div className="flex items-center gap-6 text-white/90 text-sm">
-            <div className="flex items-center gap-2">
-              <Zap className="w-4 h-4" />
-              <span>{currentCredits} crédits disponibles</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4" />
-              <span>Réponse temps réel</span>
-            </div>
-          </div>
+          <p className="text-emerald-100">
+            Test your API in real-time with different extraction types
+          </p>
         </div>
       </div>
 
-      {/* Credits Warning */}
-      {currentCredits === 0 && (
-        <div className="bg-gradient-to-r from-orange-500/10 to-red-500/10 border border-orange-500/20 rounded-2xl p-6 backdrop-blur-sm">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-orange-500/20 rounded-xl">
-              <AlertCircle className="w-6 h-6 text-orange-400" />
-            </div>
-            <div>
-              <p className="font-semibold text-white text-lg">
-                Vous n'avez plus de crédits
-              </p>
-              <p className="text-slate-300 mt-1">
-                Achetez des crédits pour continuer à utiliser l'API
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="grid lg:grid-cols-2 gap-8">
-        {/* Request Panel */}
+      {/* Configuration */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Left Column - Configuration */}
         <div className="space-y-6">
-          <div className="card-modern card-modern-hover">
+          <div className="card-modern">
             <div className="p-6">
-              <h3 className="text-xl font-bold text-white mb-2">Configuration</h3>
-              <p className="text-slate-400 text-sm mb-6">
-                Configurez votre requête API
-              </p>
+              <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                <Code2 className="w-5 h-5 text-blue-400" />
+                Configuration
+              </h2>
 
-              {apiKeys.length === 0 ? (
-                <div className="bg-yellow-500/10 border border-yellow-500/20 p-4 rounded-xl">
-                  <p className="text-sm text-yellow-400">
-                    Vous n'avez pas de clé API active. Créez-en une dans l'onglet "Clés API".
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-5">
-                  <div>
-                    <label htmlFor="apiKey" className="block text-sm font-medium text-slate-300 mb-2">
-                      Clé API
-                    </label>
+              <div className="space-y-6">
+                {/* API Key Selection */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    API Key
+                  </label>
+                  {apiKeys.length === 0 ? (
+                    <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 text-sm text-yellow-400">
+                      <AlertCircle className="w-4 h-4 inline mr-2" />
+                      No active API keys. Create one in the Keys tab.
+                    </div>
+                  ) : (
                     <select
-                      id="apiKey"
                       value={selectedKeyId}
                       onChange={(e) => setSelectedKeyId(e.target.value)}
-                      className="input-modern"
+                      className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
                     >
                       {apiKeys.map((key) => (
                         <option key={key.id} value={key.id}>
@@ -195,198 +298,200 @@ export default function PlaygroundPage() {
                         </option>
                       ))}
                     </select>
-                  </div>
-
-                  <div>
-                    <label htmlFor="url" className="block text-sm font-medium text-slate-300 mb-2">
-                      URL du produit
-                    </label>
-                    <Input
-                      id="url"
-                      type="url"
-                      placeholder="https://example.com/product/123"
-                      value={url}
-                      onChange={(e) => setUrl(e.target.value)}
-                      className="input-modern"
-                    />
-                    <p className="text-xs text-slate-500 mt-2">
-                      L'URL complète du produit à crawler
-                    </p>
-                  </div>
-
-                  <button
-                    onClick={testApi}
-                    disabled={loading || !url || currentCredits === 0}
-                    className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-                  >
-                    {loading ? (
-                      <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                        Chargement...
-                      </>
-                    ) : (
-                      <>
-                        <Play className="w-5 h-5 mr-2" />
-                        Tester l'API
-                      </>
-                    )}
-                  </button>
+                  )}
                 </div>
-              )}
+
+                {/* URL Input */}
+                <div>
+                  <label htmlFor="url" className="block text-sm font-medium text-slate-300 mb-2">
+                    Target URL
+                  </label>
+                  <Input
+                    id="url"
+                    type="url"
+                    placeholder="https://example.com/product"
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    className="input-modern"
+                  />
+                </div>
+
+                {/* Extraction Type */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Extraction Type
+                  </label>
+                  <select
+                    value={extractionType}
+                    onChange={(e) => setExtractionType(e.target.value as ExtractionType)}
+                    className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  >
+                    {EXTRACTION_TYPES.map((type) => (
+                      <option key={type.value} value={type.value}>
+                        {type.label} - {type.description}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Extraction Source */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Extraction Method
+                  </label>
+                  <select
+                    value={extractionSource}
+                    onChange={(e) => setExtractionSource(e.target.value as ExtractionSource)}
+                    className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  >
+                    {EXTRACTION_SOURCES.map((source) => (
+                      <option key={source.value} value={source.value}>
+                        {source.label} - {source.description}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Country Selection */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    <Globe className="w-4 h-4 inline mr-1" />
+                    Country (Optional)
+                  </label>
+                  <select
+                    value={countryCode}
+                    onChange={(e) => setCountryCode(e.target.value)}
+                    className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  >
+                    {COUNTRY_CODES.map((country) => (
+                      <option key={country.code} value={country.code}>
+                        {country.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Credits Display */}
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-slate-300">Available Credits</span>
+                    <span className="text-2xl font-bold text-blue-400">
+                      {currentCredits.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Test Button */}
+                <button
+                  onClick={testApi}
+                  disabled={loading || apiKeys.length === 0}
+                  className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  <Play className="w-5 h-5" />
+                  {loading ? "Processing..." : "Test API"}
+                </button>
+
+                {/* Error Display */}
+                {error && (
+                  <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-sm text-red-400">
+                    <AlertCircle className="w-4 h-4 inline mr-2" />
+                    {error}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
-          {/* cURL Command */}
-          {apiKeys.length > 0 && url && (
-            <div className="card-modern">
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-bold text-white">Commande cURL</h3>
-                  <button
-                    onClick={copyCurlCommand}
-                    className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
-                  >
-                    <Copy className="w-4 h-4 text-slate-400" />
-                  </button>
-                </div>
-                <pre className="bg-slate-950 border border-slate-800 text-green-400 p-4 rounded-xl text-xs overflow-x-auto">
-                  {`curl -X GET "${window.location.origin}/api/v1/product-crawl?url=${encodeURIComponent(
-                    url
-                  )}" \\
-  -H "X-API-Key: ${apiKeys.find((k) => k.id === selectedKeyId)?.key}"`}
-                </pre>
+          {/* Code Examples */}
+          <div className="card-modern">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-white">cURL Example</h3>
+                <button
+                  onClick={copyCurlCommand}
+                  className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
+                  title="Copy"
+                >
+                  {copiedCode ? (
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                  ) : (
+                    <Copy className="w-5 h-5 text-slate-400" />
+                  )}
+                </button>
               </div>
+              <pre className="bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-slate-300 overflow-x-auto">
+                <code>{generateCurlCommand()}</code>
+              </pre>
             </div>
-          )}
+          </div>
         </div>
 
-        {/* Response Panel */}
-        <div>
-          <div className="card-modern h-full">
+        {/* Right Column - Response */}
+        <div className="space-y-6">
+          <div className="card-modern">
             <div className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold text-white">Réponse</h3>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-white">Response</h2>
                 {response && (
                   <button
                     onClick={copyResponse}
                     className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
+                    title="Copy response"
                   >
-                    <Copy className="w-4 h-4 text-slate-400" />
+                    {copiedResponse ? (
+                      <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                    ) : (
+                      <Copy className="w-5 h-5 text-slate-400" />
+                    )}
                   </button>
                 )}
               </div>
 
-              {error && (
-                <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl">
-                  <p className="font-semibold mb-1">Erreur</p>
-                  <p className="text-sm">{error}</p>
-                </div>
-              )}
-
-              {response && (
+              {response ? (
                 <div className="space-y-4">
-                  <div className="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-xl">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-semibold text-emerald-400 flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4" />
-                        Succès - Statut 200
-                      </span>
-                      <span className="text-xs text-emerald-400/80">
-                        Crédits restants: {response.credits?.remaining || 0}
-                      </span>
+                  {/* Metadata */}
+                  {response.metadata && (
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="bg-slate-800/50 rounded-lg p-3">
+                        <div className="text-xs text-slate-400 mb-1">Status</div>
+                        <div className="text-emerald-400 font-semibold">Success</div>
+                      </div>
+                      <div className="bg-slate-800/50 rounded-lg p-3">
+                        <div className="text-xs text-slate-400 mb-1">Credits Used</div>
+                        <div className="text-blue-400 font-semibold">
+                          {response.metadata.creditsUsed}
+                        </div>
+                      </div>
+                      <div className="bg-slate-800/50 rounded-lg p-3">
+                        <div className="text-xs text-slate-400 mb-1">Processing Time</div>
+                        <div className="text-violet-400 font-semibold">
+                          {response.metadata.processingTime}ms
+                        </div>
+                      </div>
+                      <div className="bg-slate-800/50 rounded-lg p-3">
+                        <div className="text-xs text-slate-400 mb-1">Remaining Credits</div>
+                        <div className="text-cyan-400 font-semibold">
+                          {response.metadata.creditsRemaining}
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  )}
 
-                  <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 overflow-x-auto max-h-[600px] overflow-y-auto">
-                    <pre className="text-sm text-green-400">
-                      {JSON.stringify(response, null, 2)}
+                  {/* JSON Response */}
+                  <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 max-h-[600px] overflow-auto">
+                    <pre className="text-sm text-slate-300">
+                      <code>{JSON.stringify(response.data, null, 2)}</code>
                     </pre>
                   </div>
                 </div>
-              )}
-
-              {!error && !response && !loading && (
-                <div className="text-center py-20">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-slate-800/50 rounded-2xl flex items-center justify-center">
-                    <Code2 className="w-8 h-8 text-slate-600" />
-                  </div>
-                  <p className="text-slate-500">La réponse de l'API s'affichera ici</p>
+              ) : (
+                <div className="bg-slate-800/30 border-2 border-dashed border-slate-700 rounded-xl p-12 text-center">
+                  <Code2 className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+                  <p className="text-slate-400">
+                    Configure your request and click "Test API" to see the response
+                  </p>
                 </div>
               )}
-
-              {loading && (
-                <div className="flex flex-col items-center justify-center py-20">
-                  <div className="relative">
-                    <div className="animate-spin rounded-full h-16 w-16 border-4 border-slate-800"></div>
-                    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 absolute inset-0"></div>
-                  </div>
-                  <p className="text-slate-400 mt-4">Traitement en cours...</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Documentation */}
-      <div className="card-modern">
-        <div className="p-8">
-          <h3 className="text-2xl font-bold text-white mb-6">Documentation API</h3>
-
-          <div className="space-y-6">
-            <div>
-              <h4 className="text-lg font-semibold text-white mb-3">Endpoint</h4>
-              <code className="bg-slate-950 border border-slate-800 px-4 py-2 rounded-xl text-sm text-blue-400 inline-block">
-                GET /api/v1/product-crawl
-              </code>
-            </div>
-
-            <div>
-              <h4 className="text-lg font-semibold text-white mb-3">Paramètres</h4>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <code className="bg-slate-950 border border-slate-800 px-3 py-1 rounded-lg text-sm text-violet-400 whitespace-nowrap">
-                    url
-                  </code>
-                  <div className="text-sm text-slate-300">
-                    <span className="text-orange-400 font-medium">(required)</span> - L'URL
-                    complète du produit à crawler
-                  </div>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="text-lg font-semibold text-white mb-3">Headers</h4>
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <code className="bg-slate-950 border border-slate-800 px-3 py-1 rounded-lg text-sm text-violet-400 whitespace-nowrap">
-                    X-API-Key
-                  </code>
-                  <div className="text-sm text-slate-300">
-                    Votre clé API d'authentification
-                  </div>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="text-lg font-semibold text-white mb-3">Réponse</h4>
-              <p className="text-sm text-slate-400 mb-4">
-                L'API retourne un objet JSON contenant les informations du produit et les crédits
-                restants.
-              </p>
-              <pre className="bg-slate-950 border border-slate-800 p-4 rounded-xl text-xs overflow-x-auto text-green-400">
-                {`{
-  "data": {
-    // Données du produit
-  },
-  "credits": {
-    "remaining": 99,
-    "used": 1
-  }
-}`}
-              </pre>
             </div>
           </div>
         </div>
@@ -394,4 +499,3 @@ export default function PlaygroundPage() {
     </div>
   );
 }
-
