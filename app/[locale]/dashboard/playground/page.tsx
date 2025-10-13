@@ -64,9 +64,11 @@ export default function PlaygroundPage() {
   const [selectedKeyId, setSelectedKeyId] = useState<string>("");
   const [url, setUrl] = useState("");
   const [extractionType, setExtractionType] = useState<ExtractionType>('product');
-  const [extractionSource, setExtractionSource] = useState<ExtractionSource>('browserHtml');
   const [countryCode, setCountryCode] = useState("");
   const [loading, setLoading] = useState(false);
+  
+  // Always use httpResponseBody (fast and cheap)
+  const extractionSource: ExtractionSource = 'httpResponseBody';
   const [response, setResponse] = useState<any>(null);
   const [error, setError] = useState("");
   const [currentCredits, setCurrentCredits] = useState(0);
@@ -329,24 +331,6 @@ print(data)`;
                     {EXTRACTION_TYPES.map((type) => (
                       <option key={type.value} value={type.value}>
                         {type.label} - {type.description}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Extraction Source */}
-                <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Extraction Method
-                  </label>
-                  <select
-                    value={extractionSource}
-                    onChange={(e) => setExtractionSource(e.target.value as ExtractionSource)}
-                    className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
-                  >
-                    {EXTRACTION_SOURCES.map((source) => (
-                      <option key={source.value} value={source.value}>
-                        {source.label} - {source.description}
                       </option>
                     ))}
                   </select>

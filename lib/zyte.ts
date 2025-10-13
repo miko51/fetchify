@@ -74,11 +74,19 @@ function buildZyteRequestBody(options: ZyteExtractionOptions): Record<string, an
     [type]: true, // Enable the specific extraction type
   };
 
-  // Add extraction source if specified
-  if (extractFrom) {
+  // SERP (non-AI) doesn't support extractFrom option
+  // Only add extraction source for AI-powered types
+  if (extractFrom && type !== 'serp') {
     const optionsKey = `${type}Options`;
     body[optionsKey] = {
       extractFrom,
+    };
+  }
+
+  // For SERP, request maxItems for top 10 results
+  if (type === 'serp') {
+    body.serpOptions = {
+      maxItems: 10,
     };
   }
 
@@ -151,7 +159,7 @@ export async function extractWithZyte(
         error: `No ${options.type} data found in the response`,
         metadata: {
           extractionType: options.type,
-          source: options.extractFrom || 'browserHtml',
+          source: options.extractFrom || 'httpResponseBody',
           country: options.geolocation,
           processingTime: Date.now() - startTime,
         },
@@ -163,7 +171,7 @@ export async function extractWithZyte(
       data: extractedData,
       metadata: {
         extractionType: options.type,
-        source: options.extractFrom || 'browserHtml',
+        source: options.extractFrom || 'httpResponseBody',
         country: options.geolocation,
         processingTime: Date.now() - startTime,
       },
@@ -175,7 +183,7 @@ export async function extractWithZyte(
       error: error.message || 'An unexpected error occurred during extraction',
       metadata: {
         extractionType: options.type,
-        source: options.extractFrom || 'browserHtml',
+        source: options.extractFrom || 'httpResponseBody',
         country: options.geolocation,
         processingTime: Date.now() - startTime,
       },

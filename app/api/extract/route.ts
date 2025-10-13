@@ -146,8 +146,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 3. Validate extraction source if provided
-    const extractionSource = validatedData.source || 'browserHtml';
+    // 3. Validate extraction source if provided (default: httpResponseBody)
+    const extractionSource = validatedData.source || 'httpResponseBody';
     if (validatedData.source && !isValidExtractionSource(validatedData.source)) {
       return NextResponse.json(
         {
