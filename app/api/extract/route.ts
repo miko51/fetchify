@@ -220,14 +220,15 @@ export async function POST(req: NextRequest) {
         data: {
           userId: user.id,
           apiKeyId: apiKeyRecord.id,
-          endpoint: `/api/extract?type=${validatedData.type}`,
-          method: 'POST',
-          statusCode: 500,
+          endpoint: `/api/extract`,
+          requestUrl: validatedData.url,
+          success: false,
+          errorMessage: extractionResult.error,
           creditsUsed: 0,
-          response: JSON.stringify({
+          response: {
             error: extractionResult.error,
-          }),
-          metadata: extractionResult.metadata,
+            metadata: extractionResult.metadata,
+          },
         },
       });
 
@@ -264,12 +265,14 @@ export async function POST(req: NextRequest) {
       data: {
         userId: user.id,
         apiKeyId: apiKeyRecord.id,
-        endpoint: `/api/extract?type=${validatedData.type}`,
-        method: 'POST',
-        statusCode: 200,
+        endpoint: `/api/extract`,
+        requestUrl: validatedData.url,
+        success: true,
         creditsUsed: creditCost,
-        response: JSON.stringify(extractionResult.data),
-        metadata: extractionResult.metadata,
+        response: {
+          data: extractionResult.data,
+          metadata: extractionResult.metadata,
+        },
       },
     });
 
