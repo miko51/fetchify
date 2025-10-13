@@ -216,9 +216,9 @@ export default function ApiKeysPage() {
               </p>
               <button
                 onClick={() => setShowCreateForm(true)}
-                className="btn-primary"
+                className="btn-primary inline-flex items-center gap-2"
               >
-                <Plus className="w-5 h-5 mr-2" />
+                <Plus className="w-5 h-5" />
                 Créer une clé
               </button>
             </div>
