@@ -38,6 +38,23 @@ export default function VerifyEmailPage() {
     }
   };
 
+  const handlePaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData("text").trim();
+    
+    // Extraire uniquement les chiffres
+    const digits = pastedData.replace(/\D/g, "").slice(0, 6);
+    
+    if (digits.length === 6) {
+      const newCode = digits.split("");
+      setCode(newCode);
+      
+      // Focus le dernier input
+      const lastInput = document.getElementById(`code-5`);
+      lastInput?.focus();
+    }
+  };
+
   const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
     if (e.key === "Backspace" && !code[index] && index > 0) {
       const prevInput = document.getElementById(`code-${index - 1}`);
@@ -151,6 +168,7 @@ export default function VerifyEmailPage() {
               value={digit}
               onChange={(e) => handleCodeChange(index, e.target.value)}
               onKeyDown={(e) => handleKeyDown(index, e)}
+              onPaste={handlePaste}
               className="w-12 h-14 text-center text-2xl font-bold bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
             />
           ))}
