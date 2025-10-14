@@ -74,16 +74,19 @@ function buildZyteRequestBody(options: ZyteExtractionOptions): Record<string, an
     [type]: true, // Enable the specific extraction type
   };
 
-  // SERP (non-AI) doesn't support extractFrom option
-  // Only add extraction source for AI-powered types
-  if (extractFrom && type !== 'serp') {
+  // SERP requires specific options
+  if (type === 'serp') {
+    body.serpOptions = {
+      extractFrom: extractFrom || 'httpResponseBody',
+    };
+    body.followRedirect = true; // Required for SERP to follow Google redirects
+  } else if (extractFrom) {
+    // For other types, add extractFrom to their specific options
     const optionsKey = `${type}Options`;
     body[optionsKey] = {
       extractFrom,
     };
   }
-
-  // SERP doesn't need special options - it returns top results by default
 
   // Add geolocation if specified
   if (geolocation) {
