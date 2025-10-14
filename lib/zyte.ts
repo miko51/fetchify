@@ -107,7 +107,7 @@ export async function extractWithZyte(
   if (!ZYTE_API_KEY) {
     return {
       success: false,
-      error: 'Zyte API key is not configured. Please contact support.',
+      error: 'Extraction service temporarily unavailable. Please contact support.',
     };
   }
 
@@ -131,7 +131,7 @@ export async function extractWithZyte(
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Zyte API error:', response.status, errorText);
+      console.error('Extraction API error:', response.status, errorText);
       
       return {
         success: false,
@@ -172,7 +172,7 @@ export async function extractWithZyte(
       },
     };
   } catch (error: any) {
-    console.error('Zyte extraction error:', error);
+    console.error('Extraction service error:', error);
     return {
       success: false,
       error: error.message || 'An unexpected error occurred during extraction',
