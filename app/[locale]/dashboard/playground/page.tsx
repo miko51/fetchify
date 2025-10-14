@@ -47,17 +47,33 @@ const EXTRACTION_SOURCES: { value: ExtractionSource; label: string; description:
   { value: 'browserHtml', label: 'Browser + Visual', description: 'Best quality (default)' },
 ];
 
+// Liste des pays supportés par Zyte API
+// Source: https://docs.zyte.com/zyte-api/usage/reference.html#geolocation
 const COUNTRY_CODES = [
   { code: '', label: 'No specific country' },
-  { code: 'FR', label: '🇫🇷 France' },
   { code: 'US', label: '🇺🇸 United States' },
+  { code: 'FR', label: '🇫🇷 France' },
   { code: 'GB', label: '🇬🇧 United Kingdom' },
   { code: 'DE', label: '🇩🇪 Germany' },
   { code: 'ES', label: '🇪🇸 Spain' },
   { code: 'IT', label: '🇮🇹 Italy' },
   { code: 'CA', label: '🇨🇦 Canada' },
   { code: 'AU', label: '🇦🇺 Australia' },
+  { code: 'BR', label: '🇧🇷 Brazil' },
+  { code: 'MX', label: '🇲🇽 Mexico' },
+  { code: 'NL', label: '🇳🇱 Netherlands' },
+  { code: 'BE', label: '🇧🇪 Belgium' },
+  { code: 'PL', label: '🇵🇱 Poland' },
+  { code: 'IN', label: '🇮🇳 India' },
+  { code: 'JP', label: '🇯🇵 Japan' },
+  { code: 'KR', label: '🇰🇷 South Korea' },
+  { code: 'CN', label: '🇨🇳 China' },
+  { code: 'TR', label: '🇹🇷 Turkey' },
+  { code: 'RU', label: '🇷🇺 Russia' },
+  { code: 'ZA', label: '🇿🇦 South Africa' },
 ];
+
+type SearchEngine = 'google' | 'bing';
 
 export default function PlaygroundPage() {
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
@@ -65,7 +81,61 @@ export default function PlaygroundPage() {
   const [url, setUrl] = useState("");
   const [extractionType, setExtractionType] = useState<ExtractionType>('product');
   const [countryCode, setCountryCode] = useState("");
+  const [searchEngine, setSearchEngine] = useState<SearchEngine>('google');
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Quand on passe en mode SERP, initialiser un pays par défaut si vide
+  const handleExtractionTypeChange = (newType: ExtractionType) => {
+    setExtractionType(newType);
+    if (newType === 'serp' && !countryCode) {
+      setCountryCode('US'); // Pays par défaut pour SERP
+    }
+  };
+
+  // Mapping des codes pays vers les domaines Google
+  const getGoogleDomain = (country: string): string => {
+    const googleDomains: Record<string, string> = {
+      'US': 'google.com',
+      'FR': 'google.fr',
+      'GB': 'google.co.uk',
+      'DE': 'google.de',
+      'ES': 'google.es',
+      'IT': 'google.it',
+      'CA': 'google.ca',
+      'AU': 'google.com.au',
+      'BR': 'google.com.br',
+      'MX': 'google.com.mx',
+      'NL': 'google.nl',
+      'BE': 'google.be',
+      'PL': 'google.pl',
+      'IN': 'google.co.in',
+      'JP': 'google.co.jp',
+      'KR': 'google.co.kr',
+      'CN': 'google.cn',
+      'TR': 'google.com.tr',
+      'RU': 'google.ru',
+      'ZA': 'google.co.za',
+    };
+    return googleDomains[country] || 'google.com';
+  };
+
+  // Helper pour générer l'URL finale selon le type d'extraction
+  const generateFinalUrl = () => {
+    if (extractionType === 'serp') {
+      const query = searchQuery || "example query";
+      const encodedQuery = encodeURIComponent(query);
+      
+      if (searchEngine === 'google') {
+        const domain = getGoogleDomain(countryCode);
+        return `https://www.${domain}/search?q=${encodedQuery}`;
+      } else {
+        // Bing utilise le paramètre cc pour le pays
+        return `https://www.bing.com/search?q=${encodedQuery}${countryCode ? `&cc=${countryCode}` : ''}`;
+      }
+    }
+    return url || "https://example.com";
+  };
   
   // Always use httpResponseBody (fast and cheap)
   const extractionSource: ExtractionSource = 'httpResponseBody';
@@ -105,9 +175,21 @@ export default function PlaygroundPage() {
   };
 
   const testApi = async () => {
-    if (!url) {
-      setError("Veuillez entrer une URL");
-      return;
+    // Validation pour SERP
+    if (extractionType === 'serp') {
+      if (!searchQuery.trim()) {
+        setError("Veuillez entrer une requête de recherche");
+        return;
+      }
+      if (!countryCode) {
+        setError("Le pays est obligatoire pour les recherches SERP");
+        return;
+      }
+    } else {
+      if (!url) {
+        setError("Veuillez entrer une URL");
+        return;
+      }
     }
 
     if (!selectedKeyId) {
@@ -124,7 +206,7 @@ export default function PlaygroundPage() {
 
     try {
       const requestBody: any = {
-        url,
+        url: generateFinalUrl(),
         type: extractionType,
         source: extractionSource,
       };
@@ -171,7 +253,7 @@ export default function PlaygroundPage() {
     if (!selectedKey) return "";
 
     const requestBody: any = {
-      url: url || "https://example.com",
+      url: generateFinalUrl(),
       type: extractionType,
       source: extractionSource,
     };
@@ -197,7 +279,7 @@ export default function PlaygroundPage() {
     if (!selectedKey) return "";
 
     const requestBody: any = {
-      url: url || "https://example.com",
+      url: generateFinalUrl(),
       type: extractionType,
       source: extractionSource,
     };
@@ -224,7 +306,7 @@ console.log(data);`;
     if (!selectedKey) return "";
 
     const requestBody: any = {
-      url: url || "https://example.com",
+      url: generateFinalUrl(),
       type: extractionType,
       source: extractionSource,
     };
@@ -303,20 +385,57 @@ print(data)`;
                   )}
                 </div>
 
-                {/* URL Input */}
-                <div>
-                  <label htmlFor="url" className="block text-sm font-medium text-slate-300 mb-2">
-                    Target URL
-                  </label>
-                  <Input
-                    id="url"
-                    type="url"
-                    placeholder="https://example.com/product"
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                    className="input-modern"
-                  />
-                </div>
+                {/* URL Input ou Search Query selon le type */}
+                {extractionType === 'serp' ? (
+                  <>
+                    {/* Search Engine Selection */}
+                    <div>
+                      <label className="block text-sm font-medium text-slate-300 mb-2">
+                        Search Engine *
+                      </label>
+                      <select
+                        value={searchEngine}
+                        onChange={(e) => setSearchEngine(e.target.value as SearchEngine)}
+                        className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                      >
+                        <option value="google">🔍 Google</option>
+                        <option value="bing">🔍 Bing</option>
+                      </select>
+                    </div>
+
+                    {/* Search Query Input */}
+                    <div>
+                      <label htmlFor="searchQuery" className="block text-sm font-medium text-slate-300 mb-2">
+                        Search Query *
+                      </label>
+                      <Input
+                        id="searchQuery"
+                        type="text"
+                        placeholder="iphone 15 pro"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="input-modern"
+                      />
+                      <p className="mt-1 text-xs text-slate-400">
+                        💡 URL générée: {generateFinalUrl()}
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <div>
+                    <label htmlFor="url" className="block text-sm font-medium text-slate-300 mb-2">
+                      Target URL
+                    </label>
+                    <Input
+                      id="url"
+                      type="url"
+                      placeholder="https://example.com/product"
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                      className="input-modern"
+                    />
+                  </div>
+                )}
 
                 {/* Extraction Type */}
                 <div>
@@ -325,7 +444,7 @@ print(data)`;
                   </label>
                   <select
                     value={extractionType}
-                    onChange={(e) => setExtractionType(e.target.value as ExtractionType)}
+                    onChange={(e) => handleExtractionTypeChange(e.target.value as ExtractionType)}
                     className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
                   >
                     {EXTRACTION_TYPES.map((type) => (
@@ -340,12 +459,14 @@ print(data)`;
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-2">
                     <Globe className="w-4 h-4 inline mr-1" />
-                    Country (Optional)
+                    Country {extractionType === 'serp' ? '(Required for SERP) *' : '(Optional)'}
                   </label>
                   <select
                     value={countryCode}
                     onChange={(e) => setCountryCode(e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                    className={`w-full px-4 py-3 bg-slate-800/50 border rounded-xl text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all ${
+                      extractionType === 'serp' && !countryCode ? 'border-red-500' : 'border-slate-700'
+                    }`}
                   >
                     {COUNTRY_CODES.map((country) => (
                       <option key={country.code} value={country.code}>
@@ -353,6 +474,11 @@ print(data)`;
                       </option>
                     ))}
                   </select>
+                  {extractionType === 'serp' && !countryCode && (
+                    <p className="mt-1 text-xs text-red-400">
+                      ⚠️ Le pays est obligatoire pour améliorer la qualité des résultats SERP
+                    </p>
+                  )}
                 </div>
 
                 {/* Credits Display */}

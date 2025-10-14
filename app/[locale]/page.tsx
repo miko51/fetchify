@@ -7,26 +7,45 @@ import { ChevronDown, Check, X, Sparkles, Zap, Clock, Globe, Shield, TrendingUp 
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { formatNumber } from "@/lib/format";
 
+interface CreditPackage {
+  id: string;
+  name: string;
+  description: string;
+  credits: number;
+  price: number;
+  features: string;
+  isPopular: boolean;
+  isActive: boolean;
+}
+
 export default function LandingPage() {
   const t = useTranslations();
   const locale = useLocale();
-  const [pricingValue, setPricingValue] = useState(1000);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [packages, setPackages] = useState<CreditPackage[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setMounted(true);
+    fetchPackages();
   }, []);
 
-  // Calcul automatique du prix basé sur les paliers
-  const calculatePrice = (requests: number) => {
-    if (requests <= 1000) return 50;
-    if (requests <= 10000) return 50 + ((requests - 1000) / 9000) * 50;
-    if (requests <= 100000) return 100 + ((requests - 10000) / 90000) * 200;
-    return 300 + ((requests - 100000) / 900000) * 700;
+  const fetchPackages = async () => {
+    try {
+      const response = await fetch("/api/packages", { cache: 'no-store' });
+      const data = await response.json();
+      setPackages(data.packages.filter((p: CreditPackage) => p.isActive));
+    } catch (error) {
+      console.error("Erreur lors du chargement des packages:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const price = Math.round(calculatePrice(pricingValue));
+  const formatPrice = (price: number) => {
+    return (price / 100).toFixed(2);
+  };
 
   const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
@@ -148,7 +167,7 @@ export default function LandingPage() {
 
       {/* Pricing Section avec Slider */}
       <div id="pricing" className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
               {t('pricing.title')}
@@ -156,70 +175,106 @@ export default function LandingPage() {
             <p className="text-xl text-slate-400">{t('pricing.subtitle')}</p>
           </div>
 
-          <div className="bg-slate-900/50 border border-slate-800 rounded-3xl p-8 md:p-12">
-            <div className="mb-8">
-              <div className="flex justify-between items-center mb-4">
-                <span className="text-lg text-slate-300">Nombre de requêtes</span>
-                <span className="text-3xl font-bold text-white">
-                  {mounted ? formatNumber(pricingValue) : pricingValue}
-                </span>
-              </div>
-              
-              <input
-                type="range"
-                min="100"
-                max="1000000"
-                step="100"
-                value={pricingValue}
-                onChange={(e) => setPricingValue(Number(e.target.value))}
-                className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer slider"
-                style={{
-                  background: `linear-gradient(to right, rgb(59, 130, 246) 0%, rgb(139, 92, 246) ${
-                    (pricingValue / 1000000) * 100
-                  }%, rgb(51, 65, 85) ${(pricingValue / 1000000) * 100}%)`
-                }}
-              />
-              
-              <div className="flex justify-between text-sm text-slate-500 mt-2">
-                <span>100</span>
-                <span>1,000</span>
-                <span>10,000</span>
-                <span>100,000</span>
-                <span>1,000,000</span>
-              </div>
-            </div>
-
-            <div className="text-center mb-8">
-              <div className="text-6xl font-bold text-white mb-2">
-                ${price}
-                <span className="text-2xl text-slate-400">{t('pricing.perMonth')}</span>
-              </div>
-              <div className="text-slate-400">
-                ${mounted ? (price / pricingValue * 1000).toFixed(2) : '--'} / 1000 {t('pricing.credits')}
-              </div>
-            </div>
-
-            <div className="space-y-4 mb-8">
-              {[
-                t('pricing.features.api'),
-                t('pricing.features.support'),
-                t('pricing.features.updates'),
-                t('pricing.features.documentation')
-              ].map((feature, idx) => (
-                <div key={idx} className="flex items-center space-x-3">
-                  <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
-                  <span className="text-slate-300">{feature}</span>
+          {loading ? (
+            <div className="flex items-center justify-center min-h-[400px]">
+              <div className="relative">
+                <div className="w-16 h-16 border-4 border-slate-800 border-t-blue-500 rounded-full animate-spin"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Sparkles className="text-blue-400 animate-pulse" size={24} />
                 </div>
-              ))}
+              </div>
             </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {packages.map((pkg) => {
+                let features: string[] = [];
+                try {
+                  features = pkg.features ? JSON.parse(pkg.features) : [];
+                } catch (error) {
+                  console.error('Erreur parsing features:', error);
+                  features = [];
+                }
+                return (
+                  <div
+                    key={pkg.id}
+                    className={`relative bg-slate-900/50 border rounded-3xl p-8 hover:border-blue-500/50 transition-all ${
+                      pkg.isPopular 
+                        ? 'border-blue-500 shadow-2xl shadow-blue-500/20' 
+                        : 'border-slate-800'
+                    }`}
+                  >
+                    {pkg.isPopular && (
+                      <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                        <span className="bg-gradient-to-r from-blue-600 to-violet-600 text-white px-4 py-1 rounded-full text-sm font-semibold shadow-lg">
+                          {t('pricing.popular')}
+                        </span>
+                      </div>
+                    )}
 
-            <Link
-              href="/auth/signup"
-              className="block w-full text-center px-8 py-4 rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white font-semibold text-lg transition-all shadow-2xl shadow-blue-500/30"
-            >
-              {t('pricing.selectPlan')}
-            </Link>
-          </div>
+                    <div className="text-center mb-6">
+                      <h3 className="text-2xl font-bold text-white mb-2">{pkg.name}</h3>
+                      {pkg.description && (
+                        <p className="text-sm text-slate-400">{pkg.description}</p>
+                      )}
+                    </div>
+
+                    <div className="text-center mb-6">
+                      <div className="text-5xl font-bold text-white mb-2">
+                        ${formatPrice(pkg.price)}
+                      </div>
+                      <div className="text-slate-400">
+                        {mounted ? formatNumber(pkg.credits) : pkg.credits} {t('pricing.credits')}
+                      </div>
+                      <div className="text-sm text-slate-500 mt-1">
+                        ${mounted ? ((pkg.price / 100) / pkg.credits).toFixed(3) : '--'} / {t('pricing.credits')}
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 mb-8">
+                      {features.length > 0 ? (
+                        features.map((feature: string, idx: number) => (
+                          <div key={idx} className="flex items-start space-x-3">
+                            <Check className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
+                            <span className="text-slate-300 text-sm">{feature}</span>
+                          </div>
+                        ))
+                      ) : (
+                        <>
+                          <div className="flex items-start space-x-3">
+                            <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                            <span className="text-slate-300 text-sm">{t('pricing.features.api')}</span>
+                          </div>
+                          <div className="flex items-start space-x-3">
+                            <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                            <span className="text-slate-300 text-sm">{t('pricing.features.support')}</span>
+                          </div>
+                          <div className="flex items-start space-x-3">
+                            <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                            <span className="text-slate-300 text-sm">{t('pricing.features.updates')}</span>
+                          </div>
+                          <div className="flex items-start space-x-3">
+                            <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                            <span className="text-slate-300 text-sm">{t('pricing.features.documentation')}</span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+
+                    <Link
+                      href={`/${locale}/auth/signup`}
+                      className={`block w-full text-center px-6 py-3 rounded-xl font-semibold transition-all ${
+                        pkg.isPopular
+                          ? 'bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white shadow-lg shadow-blue-500/30'
+                          : 'bg-slate-800 hover:bg-slate-700 text-white'
+                      }`}
+                    >
+                      {t('pricing.selectPlan')}
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
 
@@ -325,28 +380,6 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
-
-      <style jsx>{`
-        .slider::-webkit-slider-thumb {
-          appearance: none;
-          width: 20px;
-          height: 20px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, rgb(59, 130, 246), rgb(139, 92, 246));
-          cursor: pointer;
-          box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
-        }
-
-        .slider::-moz-range-thumb {
-          width: 20px;
-          height: 20px;
-          border-radius: 50%;
-          background: linear-gradient(135deg, rgb(59, 130, 246), rgb(139, 92, 246));
-          cursor: pointer;
-          border: none;
-          box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
-        }
-      `}</style>
     </div>
   );
 }

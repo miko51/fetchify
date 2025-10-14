@@ -74,12 +74,11 @@ function buildZyteRequestBody(options: ZyteExtractionOptions): Record<string, an
     [type]: true, // Enable the specific extraction type
   };
 
-  // SERP requires specific options
+  // SERP requires specific options (non-AI type, doesn't support extractFrom or maxItems)
   if (type === 'serp') {
-    body.serpOptions = {
-      extractFrom: extractFrom || 'httpResponseBody',
-    };
-    body.followRedirect = true; // Required for SERP to follow Google redirects
+    // SERP is a non-AI extraction type that uses httpResponseBody by default
+    // Just set serp: true, no additional options needed
+    // Don't add serpOptions at all - it will cause a 400 error
   } else if (extractFrom) {
     // For other types, add extractFrom to their specific options
     const optionsKey = `${type}Options`;
@@ -118,6 +117,9 @@ export async function extractWithZyte(
 
   try {
     const requestBody = buildZyteRequestBody(options);
+    
+    // Debug log (temporary)
+    console.log('🔍 Extraction request:', JSON.stringify(requestBody, null, 2));
 
     // Create Basic Auth header
     const auth = Buffer.from(`${ZYTE_API_KEY}:`).toString('base64');
@@ -136,9 +138,22 @@ export async function extractWithZyte(
       const errorText = await response.text();
       console.error('Extraction API error:', response.status, errorText);
       
+      // Parse error for better messaging
+      let errorMessage = `Extraction failed: ${response.statusText}`;
+      try {
+        const errorJson = JSON.parse(errorText);
+        if (errorJson.status === 520 && errorJson.type === '/download/website-ban') {
+          errorMessage = 'The target website is currently blocking scraping requests. This is common with Google SERP. Please try again in a few minutes or use a different URL.';
+        } else if (errorJson.detail) {
+          errorMessage = `Extraction failed: ${errorJson.detail}`;
+        }
+      } catch {
+        // Keep default error message if parsing fails
+      }
+      
       return {
         success: false,
-        error: `Extraction failed: ${response.statusText}`,
+        error: errorMessage,
         metadata: {
           extractionType: options.type,
           source: options.extractFrom || 'browserHtml',
@@ -255,9 +270,18 @@ export function isValidExtractionSource(source: string): source is ExtractionSou
 }
 
 /**
- * Validate country code (basic validation for ISO 3166-1 alpha-2)
+ * Zyte supported countries for geolocation
+ * Source: https://docs.zyte.com/zyte-api/usage/reference.html#geolocation
+ */
+const ZYTE_SUPPORTED_COUNTRIES = [
+  'AU', 'BE', 'BR', 'CA', 'CN', 'DE', 'ES', 'FR', 'GB', 'IN',
+  'IT', 'JP', 'KR', 'MX', 'NL', 'PL', 'RU', 'TR', 'US', 'ZA'
+] as const;
+
+/**
+ * Validate country code against Zyte supported countries
  */
 export function isValidCountryCode(code: string): boolean {
-  return /^[A-Z]{2}$/.test(code);
+  return ZYTE_SUPPORTED_COUNTRIES.includes(code as any);
 }
 

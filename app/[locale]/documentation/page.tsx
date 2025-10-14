@@ -82,8 +82,7 @@ export default function DocumentationPage() {
   -H "Content-Type: application/json" \\
   -d '{
     "url": "https://www.google.com/search?q=iphone",
-    "type": "serp",
-    "source": "httpResponseBody"
+    "type": "serp"
   }'`,
       },
       javascript: {
@@ -139,8 +138,7 @@ console.log(data);`,
   },
   body: JSON.stringify({
     url: 'https://www.google.com/search?q=iphone',
-    type: 'serp',
-    source: 'httpResponseBody'
+    type: 'serp'
   })
 });
 
@@ -208,8 +206,7 @@ response = requests.post(
     },
     json={
         'url': 'https://www.google.com/search?q=iphone',
-        'type': 'serp',
-        'source': 'httpResponseBody'
+        'type': 'serp'
     }
 )
 
@@ -286,8 +283,7 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
 ]);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
     'url' => 'https://www.google.com/search?q=iphone',
-    'type' => 'serp',
-    'source' => 'httpResponseBody'
+    'type' => 'serp'
 ]));
 
 $response = curl_exec($ch);
