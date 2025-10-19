@@ -143,13 +143,13 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 lg:space-y-8">
       {/* Welcome Header */}
       <div>
-        <h1 className="text-4xl font-bold text-white mb-2">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2">
           {t('welcome')}, {session?.user?.name || "User"} 👋
         </h1>
-        <p className="text-slate-400 text-lg">
+        <p className="text-slate-400 text-base lg:text-lg">
           {t('activityOverview')}
         </p>
       </div>
@@ -229,17 +229,17 @@ export default function DashboardPage() {
 
       {/* Usage Chart */}
       <div className="card-modern">
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
-            <div className="flex items-center gap-3">
+        <div className="p-4 sm:p-6">
+          <div className="flex items-center justify-between mb-4 sm:mb-6 flex-wrap gap-3 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-3">
               <div className="p-2 bg-violet-500/20 rounded-lg">
-                <BarChart3 className="text-violet-400" size={24} />
+                <BarChart3 className="text-violet-400" size={20} />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-white">
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-white">
                   {t('usageOverTime')}
                 </h2>
-                <p className="text-slate-400 text-sm">
+                <p className="text-slate-400 text-xs sm:text-sm">
                   {t('viewUsage')}
                 </p>
               </div>
@@ -247,53 +247,53 @@ export default function DashboardPage() {
           </div>
 
           {/* Filtres de dates */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
             <div>
-              <label className="block text-sm text-slate-400 mb-2">
-                <Calendar className="inline mr-2" size={16} />
+              <label className="block text-xs sm:text-sm text-slate-400 mb-2">
+                <Calendar className="inline mr-1 sm:mr-2" size={14} />
                 {t('startDate')}
               </label>
               <input
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="input-modern"
+                className="input-modern text-sm"
               />
             </div>
 
             <div>
-              <label className="block text-sm text-slate-400 mb-2">
-                <Calendar className="inline mr-2" size={16} />
+              <label className="block text-xs sm:text-sm text-slate-400 mb-2">
+                <Calendar className="inline mr-1 sm:mr-2" size={14} />
                 {t('endDate')}
               </label>
               <input
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="input-modern"
+                className="input-modern text-sm"
               />
             </div>
 
-            <div className="lg:col-span-2">
-              <label className="block text-sm text-slate-400 mb-2">
+            <div className="sm:col-span-2">
+              <label className="block text-xs sm:text-sm text-slate-400 mb-2">
                 Quick periods
               </label>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => setQuickPeriod(7)}
-                  className="btn-secondary text-sm"
+                  className="btn-secondary text-xs sm:text-sm flex-1 sm:flex-initial"
                 >
                   {t('last7Days')}
                 </button>
                 <button
                   onClick={() => setQuickPeriod(30)}
-                  className="btn-secondary text-sm"
+                  className="btn-secondary text-xs sm:text-sm flex-1 sm:flex-initial"
                 >
                   {t('last30Days')}
                 </button>
                 <button
                   onClick={() => setQuickPeriod(90)}
-                  className="btn-secondary text-sm"
+                  className="btn-secondary text-xs sm:text-sm flex-1 sm:flex-initial"
                 >
                   {t('last90Days')}
                 </button>
@@ -303,28 +303,28 @@ export default function DashboardPage() {
 
           {/* Stats totales pour la période */}
           {usageStats && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
-                <p className="text-blue-400 text-sm">{t('totalCredits')}</p>
-                <p className="text-2xl font-bold text-white mt-1">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-3 sm:p-4">
+                <p className="text-blue-400 text-xs sm:text-sm">{t('totalCredits')}</p>
+                <p className="text-xl sm:text-2xl font-bold text-white mt-1">
                   {usageStats.totals.credits}
                 </p>
               </div>
-              <div className="bg-violet-500/10 border border-violet-500/20 rounded-xl p-4">
-                <p className="text-violet-400 text-sm">{t('totalCalls')}</p>
-                <p className="text-2xl font-bold text-white mt-1">
+              <div className="bg-violet-500/10 border border-violet-500/20 rounded-xl p-3 sm:p-4">
+                <p className="text-violet-400 text-xs sm:text-sm">{t('totalCalls')}</p>
+                <p className="text-xl sm:text-2xl font-bold text-white mt-1">
                   {usageStats.totals.calls}
                 </p>
               </div>
-              <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4">
-                <p className="text-emerald-400 text-sm">{t('success')}</p>
-                <p className="text-2xl font-bold text-white mt-1">
+              <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 sm:p-4">
+                <p className="text-emerald-400 text-xs sm:text-sm">{t('success')}</p>
+                <p className="text-xl sm:text-2xl font-bold text-white mt-1">
                   {usageStats.totals.success}
                 </p>
               </div>
-              <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
-                <p className="text-red-400 text-sm">{t('failures')}</p>
-                <p className="text-2xl font-bold text-white mt-1">
+              <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3 sm:p-4">
+                <p className="text-red-400 text-xs sm:text-sm">{t('failures')}</p>
+                <p className="text-xl sm:text-2xl font-bold text-white mt-1">
                   {usageStats.totals.failed}
                 </p>
               </div>
@@ -333,14 +333,14 @@ export default function DashboardPage() {
 
           {/* Graphique */}
           {loadingStats ? (
-            <div className="h-80 flex items-center justify-center">
+            <div className="h-64 sm:h-80 flex items-center justify-center">
               <div className="text-center">
                 <div className="w-12 h-12 border-4 border-slate-700 border-t-violet-500 rounded-full animate-spin mx-auto mb-3"></div>
                 <p className="text-slate-400 text-sm">Chargement des données...</p>
               </div>
             </div>
           ) : usageStats && usageStats.data.length > 0 ? (
-            <div className="h-80">
+            <div className="h-64 sm:h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={usageStats.data}>
                   <defs>

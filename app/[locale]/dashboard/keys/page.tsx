@@ -129,28 +129,28 @@ export default function ApiKeysPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 lg:space-y-8">
       {/* Header */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-violet-700 p-8 shadow-2xl">
+      <div className="relative overflow-hidden rounded-2xl lg:rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-violet-700 p-6 lg:p-8 shadow-2xl">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
-        <div className="relative z-10 flex items-center justify-between">
+        <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <div className="p-3 bg-white/10 backdrop-blur-sm rounded-xl">
-                <Key className="w-8 h-8 text-white" />
+              <div className="p-2 lg:p-3 bg-white/10 backdrop-blur-sm rounded-xl">
+                <Key className="w-6 h-6 lg:w-8 lg:h-8 text-white" />
               </div>
-              <h1 className="text-4xl font-bold text-white">Clés API</h1>
+              <h1 className="text-2xl lg:text-4xl font-bold text-white">Clés API</h1>
             </div>
-            <p className="text-violet-100">
+            <p className="text-sm lg:text-base text-violet-100">
               Gérez vos clés d'authentification pour accéder à l'API
             </p>
           </div>
           <button
             onClick={() => setShowCreateForm(!showCreateForm)}
-            className="btn-primary flex items-center gap-2"
+            className="btn-primary flex items-center gap-2 w-full lg:w-auto justify-center"
           >
             <Plus className="w-5 h-5" />
-            Nouvelle clé
+            <span className="lg:inline">Nouvelle clé</span>
           </button>
         </div>
       </div>
@@ -158,13 +158,13 @@ export default function ApiKeysPage() {
       {/* Create Form */}
       {showCreateForm && (
         <div className="card-modern">
-          <div className="p-6">
-            <h3 className="text-xl font-bold text-white mb-2">Créer une nouvelle clé API</h3>
-            <p className="text-slate-400 text-sm mb-6">
+          <div className="p-4 sm:p-6">
+            <h3 className="text-lg lg:text-xl font-bold text-white mb-2">Créer une nouvelle clé API</h3>
+            <p className="text-slate-400 text-sm mb-4 lg:mb-6">
               Donnez un nom à votre clé pour l'identifier facilement
             </p>
 
-            <div className="flex gap-4">
+            <div className="flex flex-col lg:flex-row gap-4">
               <div className="flex-1">
                 <label htmlFor="keyName" className="block text-sm font-medium text-slate-300 mb-2">
                   Nom de la clé
@@ -177,11 +177,11 @@ export default function ApiKeysPage() {
                   className="input-modern"
                 />
               </div>
-              <div className="flex items-end gap-2">
+              <div className="flex lg:items-end gap-2">
                 <button
                   onClick={createApiKey}
                   disabled={creatingKey || !newKeyName.trim()}
-                  className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex-1 lg:flex-initial"
                 >
                   {creatingKey ? "Création..." : "Créer"}
                 </button>
@@ -190,7 +190,7 @@ export default function ApiKeysPage() {
                     setShowCreateForm(false);
                     setNewKeyName("");
                   }}
-                  className="btn-secondary"
+                  className="btn-secondary flex-1 lg:flex-initial"
                 >
                   Annuler
                 </button>
@@ -226,14 +226,14 @@ export default function ApiKeysPage() {
         ) : (
           apiKeys.map((apiKey) => (
             <div key={apiKey.id} className="card-modern card-modern-hover">
-              <div className="p-6">
-                <div className="flex items-start justify-between gap-4">
+              <div className="p-4 sm:p-6">
+                <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
                   {/* Key Info */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 mb-4">
-                      <h3 className="text-xl font-bold text-white">{apiKey.name}</h3>
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4">
+                      <h3 className="text-lg sm:text-xl font-bold text-white">{apiKey.name}</h3>
                       <span
-                        className={`px-3 py-1 text-xs font-medium rounded-full ${
+                        className={`px-2 sm:px-3 py-1 text-xs font-medium rounded-full ${
                           apiKey.isActive
                             ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
                             : "bg-slate-700/50 text-slate-400 border border-slate-600"
@@ -244,74 +244,74 @@ export default function ApiKeysPage() {
                     </div>
 
                     {/* Key Display */}
-                    <div className="flex items-center gap-3 mb-4">
-                      <code className="flex-1 bg-slate-950 border border-slate-800 px-4 py-3 rounded-xl text-sm font-mono text-violet-400 overflow-x-auto">
+                    <div className="flex items-center gap-2 sm:gap-3 mb-4">
+                      <code className="flex-1 bg-slate-950 border border-slate-800 px-3 sm:px-4 py-2 sm:py-3 rounded-xl text-xs sm:text-sm font-mono text-violet-400 overflow-x-auto">
                         {visibleKeys.has(apiKey.id) ? apiKey.key : maskKey(apiKey.key)}
                       </code>
                       <button
                         onClick={() => toggleKeyVisibility(apiKey.id)}
-                        className="p-3 hover:bg-slate-800 rounded-xl transition-colors flex-shrink-0"
+                        className="p-2 sm:p-3 hover:bg-slate-800 rounded-xl transition-colors flex-shrink-0"
                         title={visibleKeys.has(apiKey.id) ? "Masquer" : "Afficher"}
                       >
                         {visibleKeys.has(apiKey.id) ? (
-                          <EyeOff className="w-5 h-5 text-slate-400" />
+                          <EyeOff className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400" />
                         ) : (
-                          <Eye className="w-5 h-5 text-slate-400" />
+                          <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400" />
                         )}
                       </button>
                       <button
                         onClick={() => copyToClipboard(apiKey.key, apiKey.id)}
-                        className="p-3 hover:bg-slate-800 rounded-xl transition-colors flex-shrink-0 relative"
+                        className="p-2 sm:p-3 hover:bg-slate-800 rounded-xl transition-colors flex-shrink-0 relative"
                         title="Copier"
                       >
                         {copiedKey === apiKey.id ? (
-                          <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                          <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
                         ) : (
-                          <Copy className="w-5 h-5 text-slate-400" />
+                          <Copy className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400" />
                         )}
                       </button>
                     </div>
 
                     {/* Stats */}
-                    <div className="flex items-center gap-6 text-sm text-slate-400">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-xs sm:text-sm text-slate-400">
                       <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4" />
+                        <Clock className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                         <span>Créée le {new Date(apiKey.createdAt).toLocaleDateString("fr-FR")}</span>
                       </div>
                       {apiKey.lastUsedAt && (
                         <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4" />
+                          <Clock className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
                           <span>
                             Utilisée le {new Date(apiKey.lastUsedAt).toLocaleDateString("fr-FR")}
                           </span>
                         </div>
                       )}
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
                         <span>{apiKey._count.apiUsage} appels</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Actions */}
-                  <div className="flex gap-2 flex-shrink-0">
+                  <div className="flex gap-2 lg:flex-col">
                     <button
                       onClick={() => toggleKeyStatus(apiKey.id, apiKey.isActive)}
-                      className={`p-3 rounded-xl transition-colors ${
+                      className={`p-2 sm:p-3 rounded-xl transition-colors flex-1 lg:flex-initial ${
                         apiKey.isActive
                           ? "bg-slate-800 hover:bg-slate-700 text-slate-300"
                           : "bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400"
                       }`}
                       title={apiKey.isActive ? "Désactiver" : "Activer"}
                     >
-                      <Power className="w-5 h-5" />
+                      <Power className="w-4 h-4 sm:w-5 sm:h-5 mx-auto" />
                     </button>
                     <button
                       onClick={() => deleteApiKey(apiKey.id)}
-                      className="p-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-xl transition-colors"
+                      className="p-2 sm:p-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-xl transition-colors flex-1 lg:flex-initial"
                       title="Supprimer"
                     >
-                      <Trash2 className="w-5 h-5" />
+                      <Trash2 className="w-4 h-4 sm:w-5 sm:h-5 mx-auto" />
                     </button>
                   </div>
                 </div>

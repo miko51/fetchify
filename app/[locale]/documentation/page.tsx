@@ -313,23 +313,23 @@ print_r($data);
       {/* Header */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link href={`/${locale}`} className="flex items-center space-x-3">
-              <Zap className="h-8 w-8 text-blue-500" />
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
+          <div className="flex justify-between items-center h-14 sm:h-16">
+            <Link href={`/${locale}`} className="flex items-center space-x-2 sm:space-x-3">
+              <Zap className="h-6 w-6 sm:h-8 sm:w-8 text-blue-500" />
+              <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
                 Fetchify
               </span>
             </Link>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <Link
                 href={`/${locale}/dashboard`}
-                className="text-slate-300 hover:text-white transition-colors"
+                className="text-slate-300 hover:text-white transition-colors text-sm sm:text-base"
               >
                 Dashboard
               </Link>
               <Link
                 href={`/${locale}/auth/signin`}
-                className="px-5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white font-medium transition-all shadow-lg shadow-blue-500/20"
+                className="px-3 sm:px-5 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white font-medium transition-all shadow-lg shadow-blue-500/20 text-sm sm:text-base"
               >
                 Sign In
               </Link>
@@ -342,24 +342,24 @@ print_r($data);
       <div className="pt-24 pb-16 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Hero */}
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-violet-500 rounded-2xl mb-6">
-              <Book className="w-10 h-10 text-white" />
+          <div className="text-center mb-8 sm:mb-12 lg:mb-16">
+            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-500 to-violet-500 rounded-xl sm:rounded-2xl mb-4 sm:mb-6">
+              <Book className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
             </div>
-            <h1 className="text-5xl font-bold text-white mb-4">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-3 sm:mb-4">
               API Documentation
             </h1>
-            <p className="text-xl text-slate-400 max-w-3xl mx-auto">
+            <p className="text-base sm:text-lg lg:text-xl text-slate-400 max-w-3xl mx-auto px-4">
               Extract structured data from any website using our powerful and simple API.
               Support for products, articles, jobs, and more.
             </p>
           </div>
 
           {/* Quick Start */}
-          <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-3xl p-8 mb-12">
-            <div className="flex items-center gap-3 mb-6">
-              <Zap className="w-6 h-6 text-blue-400" />
-              <h2 className="text-2xl font-bold text-white">Quick Start</h2>
+          <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-8 mb-8 sm:mb-12">
+            <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+              <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400" />
+              <h2 className="text-xl sm:text-2xl font-bold text-white">Quick Start</h2>
             </div>
             <div className="space-y-4">
               <div className="flex items-start gap-4">
@@ -606,42 +606,42 @@ print_r($data);
           </div>
 
           {/* Pricing */}
-          <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-3xl p-8 mb-12">
-            <div className="flex items-center gap-3 mb-6">
-              <Zap className="w-6 h-6 text-yellow-400" />
-              <h2 className="text-2xl font-bold text-white">Credit Costs</h2>
+          <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-8 mb-8 sm:mb-12">
+            <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+              <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400" />
+              <h2 className="text-xl sm:text-2xl font-bold text-white">Credit Costs</h2>
             </div>
-            <p className="text-slate-300 mb-6">
+            <p className="text-sm sm:text-base text-slate-300 mb-4 sm:mb-6">
               Credits are automatically deducted based on the extraction type and method:
             </p>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left">
+            <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+              <table className="w-full text-left min-w-[600px]">
                 <thead>
                   <tr className="border-b border-slate-700">
-                    <th className="pb-3 text-slate-300 font-semibold">Extraction Type</th>
-                    <th className="pb-3 text-slate-300 font-semibold">httpResponseBody</th>
-                    <th className="pb-3 text-slate-300 font-semibold">browserHtmlOnly</th>
-                    <th className="pb-3 text-slate-300 font-semibold">browserHtml</th>
+                    <th className="pb-3 text-xs sm:text-sm text-slate-300 font-semibold">Extraction Type</th>
+                    <th className="pb-3 text-xs sm:text-sm text-slate-300 font-semibold">httpResponseBody</th>
+                    <th className="pb-3 text-xs sm:text-sm text-slate-300 font-semibold">browserHtmlOnly</th>
+                    <th className="pb-3 text-xs sm:text-sm text-slate-300 font-semibold">browserHtml</th>
                   </tr>
                 </thead>
                 <tbody className="text-slate-400">
                   <tr className="border-b border-slate-800">
-                    <td className="py-3">product, article, jobPosting</td>
-                    <td className="py-3 text-green-400">1 credit</td>
-                    <td className="py-3 text-blue-400">2 credits</td>
-                    <td className="py-3 text-violet-400">3 credits</td>
+                    <td className="py-3 text-xs sm:text-sm">product, article, jobPosting</td>
+                    <td className="py-3 text-xs sm:text-sm text-green-400">1 credit</td>
+                    <td className="py-3 text-xs sm:text-sm text-blue-400">2 credits</td>
+                    <td className="py-3 text-xs sm:text-sm text-violet-400">3 credits</td>
                   </tr>
                   <tr className="border-b border-slate-800">
-                    <td className="py-3">productList, articleList</td>
-                    <td className="py-3 text-green-400">2 credits</td>
-                    <td className="py-3 text-blue-400">3 credits</td>
-                    <td className="py-3 text-violet-400">5 credits</td>
+                    <td className="py-3 text-xs sm:text-sm">productList, articleList</td>
+                    <td className="py-3 text-xs sm:text-sm text-green-400">2 credits</td>
+                    <td className="py-3 text-xs sm:text-sm text-blue-400">3 credits</td>
+                    <td className="py-3 text-xs sm:text-sm text-violet-400">5 credits</td>
                   </tr>
                   <tr className="border-b border-slate-800">
-                    <td className="py-3">serp (non-AI)</td>
-                    <td className="py-3 text-green-400">1 credit</td>
-                    <td className="py-3 text-blue-400">1 credit</td>
-                    <td className="py-3 text-violet-400">2 credits</td>
+                    <td className="py-3 text-xs sm:text-sm">serp (non-AI)</td>
+                    <td className="py-3 text-xs sm:text-sm text-green-400">1 credit</td>
+                    <td className="py-3 text-xs sm:text-sm text-blue-400">1 credit</td>
+                    <td className="py-3 text-xs sm:text-sm text-violet-400">2 credits</td>
                   </tr>
                 </tbody>
               </table>

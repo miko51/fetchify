@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useTranslations, useLocale } from 'next-intl';
-import { ChevronDown, Check, X, Sparkles, Zap, Clock, Globe, Shield, TrendingUp } from "lucide-react";
+import { ChevronDown, Check, X, Sparkles, Zap, Clock, Globe, Shield, TrendingUp, Menu } from "lucide-react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { formatNumber } from "@/lib/format";
 
@@ -25,6 +25,7 @@ export default function LandingPage() {
   const [mounted, setMounted] = useState(false);
   const [packages, setPackages] = useState<CreditPackage[]>([]);
   const [loading, setLoading] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -73,6 +74,7 @@ export default function LandingPage() {
               </span>
             </div>
 
+            {/* Desktop Menu */}
             <div className="hidden md:flex items-center space-x-8">
               <Link href="#pricing" className="text-slate-300 hover:text-white transition-colors">
                 {t('nav.pricing')}
@@ -94,8 +96,63 @@ export default function LandingPage() {
                 {t('nav.signIn')}
               </Link>
             </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 text-slate-300 hover:text-white transition-colors"
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden absolute top-16 left-0 right-0 bg-slate-950/95 backdrop-blur-xl border-b border-slate-800">
+            <div className="px-4 py-4 space-y-3">
+              <Link 
+                href="#pricing" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-800/50 rounded-xl transition-colors"
+              >
+                {t('nav.pricing')}
+              </Link>
+              <Link 
+                href={`/${locale}/documentation`}
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-800/50 rounded-xl transition-colors"
+              >
+                Documentation
+              </Link>
+              <Link 
+                href={`/${locale}/status`}
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-800/50 rounded-xl transition-colors"
+              >
+                Status
+              </Link>
+              <Link 
+                href="#faq"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-800/50 rounded-xl transition-colors"
+              >
+                {t('nav.faq')}
+              </Link>
+              <div className="px-4 py-2">
+                <LanguageSwitcher />
+              </div>
+              <Link
+                href="/auth/signin"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block text-center px-5 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white font-medium transition-all shadow-lg shadow-blue-500/20"
+              >
+                {t('nav.signIn')}
+              </Link>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Hero Section */}

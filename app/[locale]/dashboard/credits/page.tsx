@@ -84,13 +84,13 @@ export default function CreditsPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 lg:space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-4xl font-bold text-white mb-2">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2">
           Acheter des crédits
         </h1>
-        <p className="text-slate-400 text-lg">
+        <p className="text-slate-400 text-base lg:text-lg">
           Choisissez le pack qui correspond à vos besoins
         </p>
       </div>
@@ -99,74 +99,74 @@ export default function CreditsPage() {
       <div className="relative">
         <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-violet-600 rounded-2xl blur-xl opacity-20"></div>
         <div className="relative stat-card-blue">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-blue-500/20 rounded-xl">
-              <Zap className="text-blue-400" size={32} />
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <div className="p-2 sm:p-3 bg-blue-500/20 rounded-xl">
+              <Zap className="text-blue-400" size={24} />
             </div>
           </div>
-          <p className="text-slate-400 text-lg">Vos crédits actuels</p>
-          <p className="text-6xl font-bold text-white mt-2 mb-1">
+          <p className="text-slate-400 text-sm sm:text-base lg:text-lg">Vos crédits actuels</p>
+          <p className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mt-2 mb-1">
             {currentCredits.toLocaleString()}
           </p>
-          <p className="text-blue-400">crédits disponibles</p>
+          <p className="text-blue-400 text-sm sm:text-base">crédits disponibles</p>
         </div>
       </div>
 
       {/* Packages Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {packages.map((pkg) => (
           <div
             key={pkg.id}
             className={`relative card-modern ${
               pkg.isPopular
-                ? "border-violet-500/50 scale-105"
+                ? "border-violet-500/50 lg:scale-105"
                 : "card-modern-hover"
             }`}
           >
             {pkg.isPopular && (
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <span className="px-4 py-1 gradient-blue-violet text-white text-xs font-bold rounded-full shadow-lg">
+              <div className="absolute -top-3 sm:-top-4 left-1/2 transform -translate-x-1/2">
+                <span className="px-3 sm:px-4 py-1 gradient-blue-violet text-white text-xs font-bold rounded-full shadow-lg">
                   ⭐ POPULAIRE
                 </span>
               </div>
             )}
 
             <div className="mb-4">
-              <h3 className="text-2xl font-bold text-white mb-1">{pkg.name}</h3>
-              <p className="text-slate-400 text-sm">{pkg.description}</p>
+              <h3 className="text-xl sm:text-2xl font-bold text-white mb-1">{pkg.name}</h3>
+              <p className="text-slate-400 text-xs sm:text-sm">{pkg.description}</p>
             </div>
 
-            <div className="mb-6">
+            <div className="mb-4 sm:mb-6">
               <div className="flex items-baseline gap-2">
-                <span className="text-5xl font-bold text-white">
+                <span className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white">
                   {formatPrice(pkg.price)}
                 </span>
-                <span className="text-slate-400 text-xl">€</span>
+                <span className="text-slate-400 text-lg sm:text-xl">€</span>
               </div>
-              <p className="text-slate-500 text-sm mt-2">
+              <p className="text-slate-500 text-xs sm:text-sm mt-2">
                 {pkg.credits.toLocaleString()} crédits • {
                   (pkg.price / pkg.credits / 100).toFixed(4)
                 }€/crédit
               </p>
             </div>
 
-            <ul className="space-y-3 mb-8">
+            <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
               <li className="flex items-center gap-2">
-                <CheckCircle className="text-emerald-400 flex-shrink-0" size={20} />
-                <span className="text-slate-300">{pkg.credits.toLocaleString()} appels API</span>
+                <CheckCircle className="text-emerald-400 flex-shrink-0" size={16} />
+                <span className="text-slate-300 text-sm sm:text-base">{pkg.credits.toLocaleString()} appels API</span>
               </li>
               <li className="flex items-center gap-2">
-                <CheckCircle className="text-emerald-400 flex-shrink-0" size={20} />
-                <span className="text-slate-300">Pas d'expiration</span>
+                <CheckCircle className="text-emerald-400 flex-shrink-0" size={16} />
+                <span className="text-slate-300 text-sm sm:text-base">Pas d'expiration</span>
               </li>
               <li className="flex items-center gap-2">
-                <CheckCircle className="text-emerald-400 flex-shrink-0" size={20} />
-                <span className="text-slate-300">Support inclus</span>
+                <CheckCircle className="text-emerald-400 flex-shrink-0" size={16} />
+                <span className="text-slate-300 text-sm sm:text-base">Support inclus</span>
               </li>
               {pkg.features && pkg.features.length > 0 && pkg.features.map((feature, idx) => (
                 <li key={idx} className="flex items-center gap-2">
-                  <CheckCircle className="text-emerald-400 flex-shrink-0" size={20} />
-                  <span className="text-slate-300">{feature}</span>
+                  <CheckCircle className="text-emerald-400 flex-shrink-0" size={16} />
+                  <span className="text-slate-300 text-sm sm:text-base">{feature}</span>
                 </li>
               ))}
             </ul>
