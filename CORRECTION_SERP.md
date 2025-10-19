@@ -4,18 +4,17 @@
 
 Les requêtes SERP échouaient avec l'erreur suivante :
 ```
-Zyte API error: 400 {"detail":"Request contains unrecognized property maxItems"}
+Zyte API error: 400 {"detail":"Format of field serpOptions.extractFrom is invalid"}
 ```
 
 ## 🔍 Cause du Problème
 
 Le type `serp` est un **type d'extraction non-AI** chez Zyte qui :
 - ❌ **Ne supporte PAS** le paramètre `extractFrom` dans `serpOptions`
-- ❌ **Ne supporte PAS** le paramètre `maxItems` dans `serpOptions`
 - ✅ Utilise automatiquement `httpResponseBody` (pas de JavaScript)
-- ✅ Ne nécessite AUCUNE option dans `serpOptions`
+- ✅ Supporte uniquement `maxItems` pour limiter le nombre de résultats
 
-Le code essayait incorrectement d'ajouter `maxItems` dans `serpOptions`, ce qui causait une erreur 400 de l'API Zyte.
+Le code essayait incorrectement d'ajouter `extractFrom` dans `serpOptions`, ce qui causait une erreur 400 de l'API Zyte.
 
 ## ✅ Solution Implémentée
 
@@ -35,9 +34,10 @@ if (type === 'serp') {
 ```typescript
 if (type === 'serp') {
   // SERP est un type non-AI qui utilise httpResponseBody par défaut
-  // On ne peut PAS passer extractFrom ou maxItems à serpOptions
-  // On laisse juste { url: "...", serp: true }
-  // Pas de serpOptions du tout !
+  // On ne peut PAS passer extractFrom à serpOptions
+  body.serpOptions = {
+    maxItems: 10, // Limite aux 10 premiers résultats de recherche
+  };
 }
 ```
 
@@ -101,7 +101,7 @@ curl -X POST "http://localhost:3005/api/extract" \
 
 ## 📊 Résultat Attendu
 
-Vous obtiendrez les **résultats Google** au format JSON :
+Vous obtiendrez les **10 premiers résultats Google** au format JSON :
 
 ```json
 {
@@ -217,8 +217,7 @@ const monitorTrends = async (topic) => {
 
 1. **Rate Limiting Google** : Google peut bloquer temporairement les requêtes automatisées
    - Solution : Espacer les requêtes de quelques secondes
-   - ✅ **Utiliser la géolocalisation** : Sélectionner un pays spécifique aide à contourner les blocages
-   - **Pays supportés par Zyte** : AU, BE, BR, CA, CN, DE, ES, FR, GB, IN, IT, JP, KR, MX, NL, PL, RU, TR, US, ZA
+   - Utiliser différents pays (`country` parameter) pour varier les IP
 
 2. **Résultats Personnalisés** : Les résultats peuvent varier selon :
    - La géolocalisation (`country` parameter)
@@ -233,14 +232,15 @@ const monitorTrends = async (topic) => {
 
 | Aspect | Détails |
 |--------|---------|
-| **Problème** | `extractFrom` et `maxItems` non supportés pour SERP |
-| **Solution** | Ne pas ajouter de `serpOptions`, juste `serp: true` |
+| **Problème** | `extractFrom` non supporté pour SERP |
+| **Solution** | Retirer `extractFrom`, utiliser `maxItems` |
 | **Coût** | 1 crédit par requête |
-| **Résultats** | Résultats Google organiques |
+| **Résultats** | Top 10 résultats Google |
 | **Géolocalisation** | Supportée via `country` |
 | **Méthode** | `httpResponseBody` (automatique) |
 
 ---
 
 ✅ **Les SERP fonctionnent maintenant correctement !**
+
 
